@@ -21,10 +21,27 @@ module.exports = function(grunt) {
                 maxlen: 80
             }
         },
+        mochaTest: {
+            coverage: {
+                options: {
+                    reporter: 'html-cov',
+                    quiet: true,
+                    captureFile: 'coverage.html'
+                }
+            },
+            test: {
+                options: {
+                    reporter: 'spec',
+                    require: 'coverage/blanket'
+                },
+                src: ['test/**/*.js']
+            }
+        },
         pkg: grunt.file.readJSON('package.json')
     });
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-mocha-test');
 
-    grunt.registerTask('default', ['jshint']);
+    grunt.registerTask('default', ['jshint', 'mochaTest']);
 };
