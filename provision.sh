@@ -10,6 +10,9 @@ DEBIAN_FRONTEND=noninteractive apt-get upgrade --assume-yes
 wget http://nodejs.org/dist/v0.10.24/node-v0.10.24-linux-x64.tar.gz
 tar -xzf node-v0.10.24-linux-x64.tar.gz -C /usr/local --strip-components 1
 
+# Install grunt-cli so we have `grunt` available
+npm install -g grunt-cli
+
 # Install NPM dependencies
 cd /vagrant
 npm install
