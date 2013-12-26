@@ -2,7 +2,7 @@
 module.exports = function(grunt) {
     grunt.initConfig({
         jshint: {
-            all: ['app.js', 'gruntfile.js', 'routes/**/*.js'],
+            all: ['app.js', 'blanket.js', 'gruntfile.js', 'src/**/*.js'],
             options: {
                 bitwise: true,
                 camelcase: true,
@@ -32,7 +32,7 @@ module.exports = function(grunt) {
             test: {
                 options: {
                     reporter: 'spec',
-                    require: 'coverage/blanket'
+                    require: 'blanket'
                 },
                 src: ['test/**/*.js']
             }

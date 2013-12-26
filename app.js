@@ -1,6 +1,6 @@
 /* global console, process, require */
 var express = require('express');
-var routes = require('./routes');
+var routes = require('./src/routes');
 
 var app = express();
 
