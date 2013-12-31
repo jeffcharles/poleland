@@ -1,6 +1,6 @@
 /* global describe, it, require */
 var request = require('supertest');
-var app = require('./../../../app');
+var app = require('./../../../src/app');
 
 describe('GET /', function() {
     it('responds as expected', function(done) {

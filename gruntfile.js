@@ -3,8 +3,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
         jshint: {
             all: [
-                'app.js', 'blanket.js', 'gruntfile.js', 'src/**/*.js',
-                'test/**/*.js'
+                'blanket.js', 'gruntfile.js', 'src/**/*.js', 'test/**/*.js'
             ],
             options: {
                 bitwise: true,
