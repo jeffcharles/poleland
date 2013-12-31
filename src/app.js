@@ -1,6 +1,7 @@
 /* global console, module, process, require */
 var express = require('express');
 var routes = require('./routes');
+var polls = require('./routes/polls');
 
 var app = express();
 
@@ -13,6 +14,7 @@ if(app.get('env') == 'development') {
 }
 
 app.get('/', routes.index);
+app.get('/polls', polls.index);
 
 app.listen(app.get('port'));
 console.log('Express server listening on port ' + app.get('port'));
