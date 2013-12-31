@@ -1,4 +1,4 @@
-/* global console, process, require */
+/* global console, module, process, require */
 var express = require('express');
 var routes = require('./src/routes');
 
@@ -16,3 +16,5 @@ app.get('/', routes.index);
 
 app.listen(app.get('port'));
 console.log('Express server listening on port ' + app.get('port'));
+
+module.exports = app;
