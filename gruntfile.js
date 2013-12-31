@@ -2,7 +2,10 @@
 module.exports = function(grunt) {
     grunt.initConfig({
         jshint: {
-            all: ['app.js', 'blanket.js', 'gruntfile.js', 'src/**/*.js'],
+            all: [
+                'app.js', 'blanket.js', 'gruntfile.js', 'src/**/*.js',
+                'test/**/*.js'
+            ],
             options: {
                 bitwise: true,
                 camelcase: true,
@@ -22,19 +25,26 @@ module.exports = function(grunt) {
             }
         },
         mochaTest: {
+            acceptanceTests: {
+                options: {
+                    reporter: 'spec',
+                    require: 'blanket'
+                },
+                src: ['test/acceptance/**/*.js']
+            },
+            commitTests: {
+                options: {
+                    reporter: 'spec',
+                    require: 'blanket'
+                },
+                src: ['test/commit/**/*.js']
+            },
             coverage: {
                 options: {
                     reporter: 'html-cov',
                     quiet: true,
                     captureFile: 'coverage.html'
                 }
-            },
-            test: {
-                options: {
-                    reporter: 'spec',
-                    require: 'blanket'
-                },
-                src: ['test/**/*.js']
             }
         },
         pkg: grunt.file.readJSON('package.json')
