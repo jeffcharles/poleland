@@ -6,7 +6,8 @@ describe('GET /', function() {
     it('responds as expected', function(done) {
         request(app)
             .get('/')
-            .expect('Content-Type', 'text/plain')
+            .set('Accept', 'text/plain')
+            .expect('Content-Type', 'text/plain; charset=UTF-8')
             .expect(200, 'Hello world', done);
     });
 });

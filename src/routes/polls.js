@@ -1,4 +1,8 @@
 /* global exports */
 exports.index = function(req, res) {
-    res.send([]);
+    res.format({
+        'application/json': function() {
+            res.send([]);
+        }
+    });
 };

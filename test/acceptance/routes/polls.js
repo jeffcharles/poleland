@@ -7,7 +7,7 @@ describe('GET /polls', function() {
         request(app)
             .get('/polls')
             .set('Accept', 'application/json')
-            .expect('Content-Type', 'application/json; charset=utf-8')
+            .expect('Content-Type', 'application/json')
             .expect(200, '[]', done);
     });
 });
