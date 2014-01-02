@@ -53,23 +53,34 @@ var answers = [
     }
 ];
 
-exports.getPolls = function() {
-    var clone = function(x) { return JSON.parse(JSON.stringify(x)); };
-    return polls.map(function(poll) {
-        poll = clone(poll);
-        var mappedQuestions = poll.questions.map(function(questionId) {
-            var question = clone(questions.filter(function(question) {
-                return question.id == questionId;
-            })[0]);
-            var mappedAnswers = question.answers.map(function(answerId) {
-                return answers.filter(function(answer) {
-                    return answer.id == answerId;
-                })[0];
-            });
-            question.answers = mappedAnswers;
-            return question;
+function clone(x) {
+    return JSON.parse(JSON.stringify(x));
+}
+
+function realizePoll(poll) {
+    poll = clone(poll);
+    var mappedQuestions = poll.questions.map(function(questionId) {
+        var question = clone(questions.filter(function(question) {
+            return question.id == questionId;
+        })[0]);
+        var mappedAnswers = question.answers.map(function(answerId) {
+            return answers.filter(function(answer) {
+                return answer.id == answerId;
+            })[0];
         });
-        poll.questions = mappedQuestions;
-        return poll;
+        question.answers = mappedAnswers;
+        return question;
     });
+    poll.questions = mappedQuestions;
+    return poll;
+}
+
+exports.getPolls = function() {
+    return polls.map(realizePoll);
+};
+
+exports.getPoll = function(id) {
+    return polls.filter(function(poll) {
+        return poll.id == id;
+    }).map(realizePoll)[0];
 };
