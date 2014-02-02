@@ -5,11 +5,16 @@ function convertRelUrlToAbs(req, relativeUrl) {
     return req.protocol + '://' + req.headers.host + relativeUrl;
 }
 
-function createPollNotFoundError(req) {
-    return {
-        type: convertRelUrlToAbs(req, '/errors/poll-not-found'),
-        title: 'Poll not found'
-    };
+function sendPollNotFoundError(req, res) {
+    res.format({
+        'application/json': function() {
+            res.statusCode = 404;
+            res.send({
+                type: convertRelUrlToAbs(req, '/errors/poll-not-found'),
+                title: 'Poll not found'
+            });
+        }
+    });
 }
 
 exports.__convertRelUrlToAbs = convertRelUrlToAbs;
@@ -24,27 +29,21 @@ exports.index = function(req, res) {
 
 exports.get = function(req, res) {
     var poll = db.getPoll(req.param('pollId'));
-    res.format({
-        'application/json': function() {
-            if(!poll) {
-                res.statusCode = 404;
-                res.send(createPollNotFoundError(req));
-            } else {
+    if(!poll) {
+        sendPollNotFoundError(req, res);
+    } else {
+        res.format({
+            'application/json': function() {
                 res.send(poll);
             }
-        }
-    });
+        });
+    }
 };
 
 exports.put = function(req, res) {
     var poll = db.getPoll(req.param('pollId'));
     if(!poll) {
-        res.format({
-            'application/json': function() {
-                res.statusCode = 404;
-                res.send(createPollNotFoundError(req));
-            }
-        });
+        sendPollNotFoundError(req, res);
     } else {
         db.updatePoll(req.param('pollId'), req.body);
         res.statusCode = 204;
@@ -55,12 +54,7 @@ exports.put = function(req, res) {
 exports.del = function(req, res) {
     var poll = db.getPoll(req.param('pollId'));
     if(!poll) {
-        res.format({
-            'application/json': function() {
-                res.statusCode = 404;
-                res.send(createPollNotFoundError(req));
-            }
-        });
+        sendPollNotFoundError(req, res);
     } else {
         db.deletePoll(req.param('pollId'));
         res.statusCode = 204;
