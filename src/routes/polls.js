@@ -31,3 +31,9 @@ exports.get = function(req, res) {
         }
     });
 };
+
+exports.put = function(req, res) {
+    db.updatePoll(req.param('pollId'), req.body);
+    res.statusCode = 204;
+    res.send();
+};

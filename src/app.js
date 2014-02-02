@@ -7,6 +7,7 @@ var app = express();
 
 app.set('port', process.env.PORT || 3000);
 app.use(express.logger('dev'));
+app.use(express.json());
 app.use(app.router);
 
 if(app.get('env') == 'development') {
@@ -16,6 +17,7 @@ if(app.get('env') == 'development') {
 app.get('/', routes.index);
 app.get('/polls', polls.index);
 app.get('/polls/:pollId', polls.get);
+app.put('/polls/:pollId', polls.put);
 
 app.listen(app.get('port'));
 console.log('Express server listening on port ' + app.get('port'));
