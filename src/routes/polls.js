@@ -5,6 +5,13 @@ function convertRelUrlToAbs(req, relativeUrl) {
     return req.protocol + '://' + req.headers.host + relativeUrl;
 }
 
+function createPollNotFoundError(req) {
+    return {
+        type: convertRelUrlToAbs(req, '/errors/poll-not-found'),
+        title: 'Poll not found'
+    };
+}
+
 exports.__convertRelUrlToAbs = convertRelUrlToAbs;
 
 exports.index = function(req, res) {
@@ -21,10 +28,7 @@ exports.get = function(req, res) {
         'application/json': function() {
             if(!poll) {
                 res.statusCode = 404;
-                res.send({
-                    type: convertRelUrlToAbs(req, '/errors/poll-not-found'),
-                    title: 'Poll not found'
-                });
+                res.send(createPollNotFoundError(req));
             } else {
                 res.send(poll);
             }
@@ -33,7 +37,17 @@ exports.get = function(req, res) {
 };
 
 exports.put = function(req, res) {
-    db.updatePoll(req.param('pollId'), req.body);
-    res.statusCode = 204;
-    res.send();
+    var poll = db.getPoll(req.param('pollId'));
+    if(!poll) {
+        res.format({
+            'application/json': function() {
+                res.statusCode = 404;
+                res.send(createPollNotFoundError(req));
+            }
+        });
+    } else {
+        db.updatePoll(req.param('pollId'), req.body);
+        res.statusCode = 204;
+        res.send();
+    }
 };

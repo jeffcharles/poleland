@@ -37,27 +37,27 @@ describe('GET /polls/:id', function() {
 });
 
 describe('PUT /polls/:id', function() {
+    var poll = {
+        questions: [
+            {
+                id: '1',
+                content: 'Is this great?',
+                answers: [
+                    {
+                        id: '1',
+                        content: 'No!'
+                    }, {
+                        id: '2',
+                        content: 'Meh'
+                    }, {
+                        id: '3',
+                        content: 'Yes!'
+                    }
+                ]
+            }
+        ]
+    };
     it('updates a poll when it exists', function(done) {
-        var poll = {
-            questions: [
-                {
-                    id: '1',
-                    content: 'Is this great?',
-                    answers: [
-                        {
-                            id: '1',
-                            content: 'No!'
-                        }, {
-                            id: '2',
-                            content: 'Meh'
-                        }, {
-                            id: '3',
-                            content: 'Yes!'
-                        }
-                    ]
-                }
-            ]
-        };
         request(app)
             .put('/polls/1')
             .set('Content-Type', 'application/json')
@@ -82,5 +82,12 @@ describe('PUT /polls/:id', function() {
                         done();
                     });
             });
+    });
+    it('returns a 404 when it does not exist', function(done) {
+        request(app)
+            .put('/polls/0')
+            .set('Content-Type', 'application/json')
+            .send(poll)
+            .expect(404, done);
     });
 });
