@@ -106,4 +106,9 @@ describe('DELETE /polls/:id', function() {
                     .expect(404, done);
             });
     });
+    it('returns a 404 when it does not exist', function(done) {
+        request(app)
+            .del('/polls/0')
+            .expect(404, done);
+    });
 });

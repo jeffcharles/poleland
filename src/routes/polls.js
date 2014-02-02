@@ -53,7 +53,17 @@ exports.put = function(req, res) {
 };
 
 exports.del = function(req, res) {
-    db.deletePoll(req.param('pollId'));
-    res.statusCode = 204;
-    res.send();
+    var poll = db.getPoll(req.param('pollId'));
+    if(!poll) {
+        res.format({
+            'application/json': function() {
+                res.statusCode = 404;
+                res.send(createPollNotFoundError(req));
+            }
+        });
+    } else {
+        db.deletePoll(req.param('pollId'));
+        res.statusCode = 204;
+        res.send();
+    }
 };
