@@ -18,6 +18,7 @@ app.get('/', routes.index);
 app.get('/polls', polls.index);
 app.get('/polls/:pollId', polls.get);
 app.put('/polls/:pollId', polls.put);
+app.del('/polls/:pollId', polls.del);
 
 app.listen(app.get('port'));
 console.log('Express server listening on port ' + app.get('port'));

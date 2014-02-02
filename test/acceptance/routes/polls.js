@@ -91,3 +91,19 @@ describe('PUT /polls/:id', function() {
             .expect(404, done);
     });
 });
+
+describe('DELETE /polls/:id', function() {
+    it('deletes a poll when it exists', function(done) {
+        request(app)
+            .del('/polls/1')
+            .expect(204)
+            .end(function(err) {
+                if(err) {
+                    return done(err);
+                }
+                request(app)
+                    .get('/polls/1')
+                    .expect(404, done);
+            });
+    });
+});

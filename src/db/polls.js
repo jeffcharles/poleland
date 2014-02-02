@@ -88,3 +88,7 @@ exports.getPoll = function(id) {
 exports.updatePoll = function(id, poll) {
     polls[id] = poll;
 };
+
+exports.deletePoll = function(id) {
+    delete polls[id];
+};

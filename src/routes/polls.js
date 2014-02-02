@@ -51,3 +51,9 @@ exports.put = function(req, res) {
         res.send();
     }
 };
+
+exports.del = function(req, res) {
+    db.deletePoll(req.param('pollId'));
+    res.statusCode = 204;
+    res.send();
+};
