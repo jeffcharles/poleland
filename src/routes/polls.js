@@ -17,6 +17,15 @@ function sendPollNotFoundError(req, res) {
     });
 }
 
+function resourceOperation(req, res, operation) {
+    var poll = db.getPoll(req.param('pollId'));
+    if(!poll) {
+        sendPollNotFoundError(req, res);
+    } else {
+        operation(poll);
+    }
+}
+
 exports.__convertRelUrlToAbs = convertRelUrlToAbs;
 
 exports.index = function(req, res) {
@@ -28,36 +37,27 @@ exports.index = function(req, res) {
 };
 
 exports.get = function(req, res) {
-    var poll = db.getPoll(req.param('pollId'));
-    if(!poll) {
-        sendPollNotFoundError(req, res);
-    } else {
+    resourceOperation(req, res, function(poll) {
         res.format({
             'application/json': function() {
                 res.send(poll);
             }
         });
-    }
+    });
 };
 
 exports.put = function(req, res) {
-    var poll = db.getPoll(req.param('pollId'));
-    if(!poll) {
-        sendPollNotFoundError(req, res);
-    } else {
+    resourceOperation(req, res, function() {
         db.updatePoll(req.param('pollId'), req.body);
         res.statusCode = 204;
         res.send();
-    }
+    });
 };
 
 exports.del = function(req, res) {
-    var poll = db.getPoll(req.param('pollId'));
-    if(!poll) {
-        sendPollNotFoundError(req, res);
-    } else {
+    resourceOperation(req, res, function() {
         db.deletePoll(req.param('pollId'));
         res.statusCode = 204;
         res.send();
-    }
+    });
 };
