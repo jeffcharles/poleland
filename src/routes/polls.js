@@ -49,15 +49,13 @@ exports.get = function(req, res) {
 exports.put = function(req, res) {
     resourceOperation(req, res, function() {
         db.updatePoll(req.param('pollId'), req.body);
-        res.statusCode = 204;
-        res.send();
+        res.send(204);
     });
 };
 
 exports.del = function(req, res) {
     resourceOperation(req, res, function() {
         db.deletePoll(req.param('pollId'));
-        res.statusCode = 204;
-        res.send();
+        res.send(204);
     });
 };
