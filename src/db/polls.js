@@ -81,6 +81,18 @@ exports.getPolls = function() {
     return ids.map(getPollWithId);
 };
 
+exports.createPoll = function(poll) {
+    var parseInt2 = function(s) {
+        return parseInt(s, 10);
+    };
+    var ids = Object.keys(polls).map(parseInt2);
+    ids.sort(function(x, y) { return x - y; });
+    var highestId = ids.pop();
+    var assignedId = (highestId + 1).toString();
+    polls[assignedId] = poll;
+    return getPollWithId(assignedId);
+};
+
 exports.getPoll = function(id) {
     return getPollWithId(id);
 };

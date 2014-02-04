@@ -16,6 +16,7 @@ if(app.get('env') == 'development') {
 
 app.get('/', routes.index);
 app.get('/polls', polls.index);
+app.post('/polls', polls.post);
 app.get('/polls/:pollId', polls.get);
 app.put('/polls/:pollId', polls.put);
 app.del('/polls/:pollId', polls.del);

@@ -3,6 +3,65 @@ var assert = require('assert');
 var request = require('supertest');
 var app = require('./../../../src/app');
 
+var poll = {
+    questions: [
+        {
+            id: '1',
+            content: 'Is this great?',
+            answers: [
+                {
+                    id: '1',
+                    content: 'No!'
+                }, {
+                    id: '2',
+                    content: 'Meh'
+                }, {
+                    id: '3',
+                    content: 'Yes!'
+                }
+            ]
+        }
+    ]
+};
+
+describe('POST /polls', function() {
+    it('creates a new poll', function(done) {
+        request(app)
+            .post('/polls')
+            .set('Accept', 'application/json')
+            .set('Content-Type', 'application/json')
+            .send(poll)
+            .expect('Content-Type', 'application/json')
+            .expect('Location', /^https?:\/\/.+\/polls\/\d+$/)
+            .expect(201)
+            .end(function(err, res) {
+                if(err) {
+                    return done(err);
+                }
+                var resPoll = res.body;
+                delete resPoll._id;
+                assert.deepEqual(resPoll, poll);
+
+                var relativeUrl =
+                    '/' + res.header.location.split('/').slice(3).join('/');
+                request(app)
+                    .get(relativeUrl)
+                    .set('Accept', 'application/json')
+                    .expect('Content-Type', 'application/json')
+                    .expect(200)
+                    .end(function(err, res) {
+                        if(err) {
+                            return done(err);
+                        }
+                        var resPoll = res.body;
+                        delete resPoll._id;
+                        assert.deepEqual(resPoll, poll);
+                        done();
+                    });
+            });
+    });
+});
+
 describe('GET /polls', function() {
     it('returns a list of polls', function(done) {
         request(app)
@@ -37,26 +96,6 @@ describe('GET /polls/:id', function() {
 });
 
 describe('PUT /polls/:id', function() {
-    var poll = {
-        questions: [
-            {
-                id: '1',
-                content: 'Is this great?',
-                answers: [
-                    {
-                        id: '1',
-                        content: 'No!'
-                    }, {
-                        id: '2',
-                        content: 'Meh'
-                    }, {
-                        id: '3',
-                        content: 'Yes!'
-                    }
-                ]
-            }
-        ]
-    };
     it('updates a poll when it exists', function(done) {
         request(app)
             .put('/polls/1')

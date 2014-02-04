@@ -46,6 +46,17 @@ exports.get = function(req, res) {
     });
 };
 
+exports.post = function(req, res) {
+    res.format({
+        'application/json': function() {
+            var poll = db.createPoll(req.body);
+            res.setHeader('Location',
+                          convertRelUrlToAbs(req, '/polls/' + poll._id));
+            res.send(201, poll);
+        }
+    });
+};
+
 exports.put = function(req, res) {
     resourceOperation(req, res, function() {
         db.updatePoll(req.param('pollId'), req.body);
