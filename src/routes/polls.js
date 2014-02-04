@@ -18,12 +18,13 @@ function sendPollNotFoundError(req, res) {
 }
 
 function resourceOperation(req, res, operation) {
-    var poll = db.getPoll(req.param('pollId'));
-    if(!poll) {
-        sendPollNotFoundError(req, res);
-    } else {
-        operation(poll);
-    }
+    db.getPoll(req.param('pollId'), function(poll) {
+        if(!poll) {
+            sendPollNotFoundError(req, res);
+        } else {
+            operation(poll);
+        }
+    });
 }
 
 exports.__convertRelUrlToAbs = convertRelUrlToAbs;
@@ -31,7 +32,9 @@ exports.__convertRelUrlToAbs = convertRelUrlToAbs;
 exports.index = function(req, res) {
     res.format({
         'application/json': function() {
-            res.send(db.getPolls());
+            db.getPolls(function(polls) {
+                res.send(polls);
+            });
         }
     });
 };
@@ -49,24 +52,27 @@ exports.get = function(req, res) {
 exports.post = function(req, res) {
     res.format({
         'application/json': function() {
-            var poll = db.createPoll(req.body);
-            res.setHeader('Location',
-                          convertRelUrlToAbs(req, '/polls/' + poll._id));
-            res.send(201, poll);
+            db.createPoll(req.body, function(poll) {
+                res.setHeader('Location',
+                              convertRelUrlToAbs(req, '/polls/' + poll._id));
+                res.send(201, poll);
+            });
         }
     });
 };
 
 exports.put = function(req, res) {
     resourceOperation(req, res, function() {
-        db.updatePoll(req.param('pollId'), req.body);
-        res.send(204);
+        db.updatePoll(req.param('pollId'), req.body, function() {
+            res.send(204);
+        });
     });
 };
 
 exports.del = function(req, res) {
     resourceOperation(req, res, function() {
-        db.deletePoll(req.param('pollId'));
-        res.send(204);
+        db.deletePoll(req.param('pollId'), function() {
+            res.send(204);
+        });
     });
 };

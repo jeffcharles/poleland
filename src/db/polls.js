@@ -76,12 +76,12 @@ function getPollWithId(id) {
     return clonedPoll;
 }
 
-exports.getPolls = function() {
+exports.getPolls = function(callback) {
     var ids = Object.keys(polls);
-    return ids.map(getPollWithId);
+    callback(ids.map(getPollWithId));
 };
 
-exports.createPoll = function(poll) {
+exports.createPoll = function(poll, callback) {
     var parseInt2 = function(s) {
         return parseInt(s, 10);
     };
@@ -90,17 +90,19 @@ exports.createPoll = function(poll) {
     var highestId = ids.pop();
     var assignedId = (highestId + 1).toString();
     polls[assignedId] = poll;
-    return getPollWithId(assignedId);
+    callback(getPollWithId(assignedId));
 };
 
-exports.getPoll = function(id) {
-    return getPollWithId(id);
+exports.getPoll = function(id, callback) {
+    callback(getPollWithId(id));
 };
 
-exports.updatePoll = function(id, poll) {
+exports.updatePoll = function(id, poll, callback) {
     polls[id] = poll;
+    callback();
 };
 
-exports.deletePoll = function(id) {
+exports.deletePoll = function(id, callback) {
     delete polls[id];
+    callback();
 };
