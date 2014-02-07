@@ -40,12 +40,12 @@ exports.index = function(req, res) {
 };
 
 exports.get = function(req, res) {
-    resourceOperation(req, res, function(poll) {
-        res.format({
-            'application/json': function() {
+    res.format({
+        'application/json': function() {
+            resourceOperation(req, res, function(poll) {
                 res.send(poll);
-            }
-        });
+            });
+        }
     });
 };
 
