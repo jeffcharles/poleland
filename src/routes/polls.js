@@ -27,12 +27,24 @@ function resourceOperation(req, res, operation) {
     });
 }
 
+function preparePollForRes(req, poll) {
+    poll._links = {
+        'self': { 'href': convertRelUrlToAbs(req, '/polls/' + poll._id) },
+        'collection': { 'href': convertRelUrlToAbs(req, '/polls') }
+    };
+    delete poll._id;
+    return poll;
+}
+
 exports.__convertRelUrlToAbs = convertRelUrlToAbs;
 
 exports.index = function(req, res) {
     res.format({
         'application/json': function() {
             db.getPolls(function(polls) {
+                polls = polls.map(function(p) {
+                    return preparePollForRes(req, p);
+                });
                 res.send(polls);
             });
         }
@@ -43,6 +55,7 @@ exports.get = function(req, res) {
     res.format({
         'application/json': function() {
             resourceOperation(req, res, function(poll) {
+                preparePollForRes(req, poll);
                 res.send(poll);
             });
         }
@@ -53,8 +66,9 @@ exports.post = function(req, res) {
     res.format({
         'application/json': function() {
             db.createPoll(req.body, function(poll) {
-                res.setHeader('Location',
-                              convertRelUrlToAbs(req, '/polls/' + poll._id));
+                var selfUrl = convertRelUrlToAbs(req, '/polls/' + poll._id);
+                preparePollForRes(req, poll);
+                res.setHeader('Location', selfUrl);
                 res.send(201, poll);
             });
         }

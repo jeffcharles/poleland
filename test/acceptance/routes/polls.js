@@ -39,7 +39,7 @@ describe('POST /polls', function() {
                     return done(err);
                 }
                 var resPoll = res.body;
-                delete resPoll._id;
+                delete resPoll._links;
                 assert.deepEqual(resPoll, poll);
 
                 var relativeUrl =
@@ -54,7 +54,7 @@ describe('POST /polls', function() {
                             return done(err);
                         }
                         var resPoll = res.body;
-                        delete resPoll._id;
+                        delete resPoll._links;
                         assert.deepEqual(resPoll, poll);
                         done();
                     });
@@ -83,7 +83,7 @@ describe('GET /polls/:id', function() {
                 if(err) {
                     return done(err);
                 }
-                assert.equal(res.body._id, '1');
+                assert.ok(res.body._links.self.href.match(/\/polls\/1/));
                 done();
             });
     });
@@ -116,7 +116,7 @@ describe('PUT /polls/:id', function() {
                             return done(err);
                         }
                         var resPoll = res.body;
-                        delete resPoll._id;
+                        delete resPoll._links;
                         assert.deepEqual(resPoll, poll);
                         done();
                     });
