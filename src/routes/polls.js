@@ -1,16 +1,14 @@
 /* global exports, require */
 var db = require('../db/polls');
-
-function convertRelUrlToAbs(req, relativeUrl) {
-    return req.protocol + '://' + req.headers.host + relativeUrl;
-}
+var utilities = require('../utilities');
 
 function sendPollNotFoundError(req, res) {
     res.format({
         'application/json': function() {
             res.statusCode = 404;
             res.send({
-                type: convertRelUrlToAbs(req, '/errors/poll-not-found'),
+                type: utilities.convertRelUrlToAbs(req,
+                                                   '/errors/poll-not-found'),
                 title: 'Poll not found'
             });
         }
@@ -29,14 +27,14 @@ function resourceOperation(req, res, operation) {
 
 function preparePollForRes(req, poll) {
     poll._links = {
-        'self': { 'href': convertRelUrlToAbs(req, '/polls/' + poll._id) },
-        'collection': { 'href': convertRelUrlToAbs(req, '/polls') }
+        'self': {
+            'href': utilities.convertRelUrlToAbs(req, '/polls/' + poll._id)
+        },
+        'collection': { 'href': utilities.convertRelUrlToAbs(req, '/polls') }
     };
     delete poll._id;
     return poll;
 }
-
-exports.__convertRelUrlToAbs = convertRelUrlToAbs;
 
 exports.index = function(req, res) {
     res.format({
@@ -66,7 +64,8 @@ exports.post = function(req, res) {
     res.format({
         'application/json': function() {
             db.createPoll(req.body, function(poll) {
-                var selfUrl = convertRelUrlToAbs(req, '/polls/' + poll._id);
+                var selfUrl =
+                    utilities.convertRelUrlToAbs(req, '/polls/' + poll._id);
                 preparePollForRes(req, poll);
                 res.setHeader('Location', selfUrl);
                 res.send(201, poll);
