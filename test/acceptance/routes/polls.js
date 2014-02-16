@@ -4,6 +4,7 @@ var request = require('supertest');
 var app = require('./../../../src/app');
 
 var poll = {
+    title: 'Test',
     questions: [
         {
             id: '1',
@@ -59,6 +60,15 @@ describe('POST /polls', function() {
                         done();
                     });
             });
+    });
+    it('validates the poll', function(done) {
+        request(app)
+            .post('/polls')
+            .set('Accept', 'application/json')
+            .set('Content-Type', 'application/json')
+            .send({ foo: 'bar' })
+            .expect(400)
+            .expect('Content-Type', 'application/json', done);
     });
 });
 
