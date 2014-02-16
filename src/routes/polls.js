@@ -92,6 +92,34 @@ function resourceOperation(req, res, operation) {
     });
 }
 
+function stripUnknownPollProperties(poll) {
+    return {
+        title: poll.title,
+        questions: poll.questions.map(function(q) {
+            return {
+                id: q.id,
+                content: q.content,
+                answers: q.answers.map(function(a) {
+                    return {
+                        id: a.id,
+                        content: a.content
+                    };
+                })
+            };
+        })
+    };
+}
+
+function validatePoll(req, res, operation) {
+    var uploadedPoll = req.body;
+    var valid = tv4.validate(uploadedPoll, pollSchema);
+    if(!valid) {
+        sendPollNotValidError(req, res, tv4.error);
+    } else {
+        operation(stripUnknownPollProperties(uploadedPoll));
+    }
+}
+
 function preparePollForRes(req, poll) {
     poll._links = {
         'self': {
@@ -130,11 +158,7 @@ exports.get = function(req, res) {
 exports.post = function(req, res) {
     res.format({
         'application/json': function() {
-            var uploadedPoll = req.body;
-            var valid = tv4.validate(uploadedPoll, pollSchema);
-            if(!valid) {
-                sendPollNotValidError(req, res, tv4.error);
-            } else {
+            validatePoll(req, res, function(uploadedPoll) {
                 db.createPoll(uploadedPoll, function(poll) {
                     var selfUrl =
                         utilities.convertRelUrlToAbs(req, '/polls/' + poll._id);
@@ -142,22 +166,18 @@ exports.post = function(req, res) {
                     res.setHeader('Location', selfUrl);
                     res.send(201, poll);
                 });
-            }
+            });
         }
     });
 };
 
 exports.put = function(req, res) {
     resourceOperation(req, res, function() {
-        var uploadedPoll = req.body;
-        var valid = tv4.validate(uploadedPoll, pollSchema);
-        if(!valid) {
-            sendPollNotValidError(req, res, tv4.error);
-        } else {
-            db.updatePoll(req.param('pollId'), req.body, function() {
+        validatePoll(req, res, function(uploadedPoll) {
+            db.updatePoll(req.param('pollId'), uploadedPoll, function() {
                 res.send(204);
             });
-        }
+        });
     });
 };
 
