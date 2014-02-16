@@ -149,9 +149,15 @@ exports.post = function(req, res) {
 
 exports.put = function(req, res) {
     resourceOperation(req, res, function() {
-        db.updatePoll(req.param('pollId'), req.body, function() {
-            res.send(204);
-        });
+        var uploadedPoll = req.body;
+        var valid = tv4.validate(uploadedPoll, pollSchema);
+        if(!valid) {
+            sendPollNotValidError(req, res, tv4.error);
+        } else {
+            db.updatePoll(req.param('pollId'), req.body, function() {
+                res.send(204);
+            });
+        }
     });
 };
 

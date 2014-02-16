@@ -139,6 +139,15 @@ describe('PUT /polls/:id', function() {
             .send(poll)
             .expect(404, done);
     });
+    it('validates the poll', function(done) {
+        request(app)
+            .put('/polls/1')
+            .set('Accept', 'application/json')
+            .set('Content-Type', 'application/json')
+            .send({ foo: 'bar' })
+            .expect(400)
+            .expect('Content-Type', 'application/json', done);
+    });
 });
 
 describe('DELETE /polls/:id', function() {
