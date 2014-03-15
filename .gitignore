@@ -2,3 +2,4 @@
 /node_modules/
 
 /coverage.html
+/vagrant_ansible_inventory_default
