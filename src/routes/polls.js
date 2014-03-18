@@ -60,8 +60,10 @@ function sendPollNotFoundError(req, res) {
         'application/json': function() {
             res.statusCode = 404;
             res.send({
-                type: utilities.convertRelUrlToAbs(req,
-                                                   '/errors/poll-not-found'),
+                type: utilities.convertRelUrlToAbs(
+                    req,
+                    '/api/v1/errors/poll-not-found'
+                ),
                 title: 'Poll not found'
             });
         }
@@ -73,8 +75,10 @@ function sendPollNotValidError(req, res, error) {
         'application/json': function() {
             res.statusCode = 400;
             res.send({
-                type: utilities.convertRelUrlToAbs(req,
-                                                   '/errors/poll-not-valid'),
+                type: utilities.convertRelUrlToAbs(
+                    req,
+                    '/api/v1/errors/poll-not-valid'
+                ),
                 title: 'Poll not valid',
                 data: error
             });
@@ -123,9 +127,12 @@ function validatePoll(req, res, operation) {
 function preparePollForRes(req, poll) {
     poll._links = {
         'self': {
-            'href': utilities.convertRelUrlToAbs(req, '/polls/' + poll._id)
+            'href': utilities.convertRelUrlToAbs(req,
+                                                 '/api/v1/polls/' + poll._id)
         },
-        'collection': { 'href': utilities.convertRelUrlToAbs(req, '/polls') }
+        'collection': {
+            'href': utilities.convertRelUrlToAbs(req, '/api/v1/polls')
+        }
     };
     delete poll._id;
     return poll;
@@ -161,7 +168,9 @@ exports.post = function(req, res) {
             validatePoll(req, res, function(uploadedPoll) {
                 db.createPoll(uploadedPoll, function(poll) {
                     var selfUrl =
-                        utilities.convertRelUrlToAbs(req, '/polls/' + poll._id);
+                            utilities.convertRelUrlToAbs(req,
+                                                         '/api/v1/polls/' +
+                                                         poll._id);
                     preparePollForRes(req, poll);
                     res.setHeader('Location', selfUrl);
                     res.send(201, poll);

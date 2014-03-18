@@ -14,12 +14,12 @@ if(app.get('env') == 'development') {
     app.use(express.errorHandler());
 }
 
-app.get('/', routes.index);
-app.get('/polls', polls.index);
-app.post('/polls', polls.post);
-app.get('/polls/:pollId', polls.get);
-app.put('/polls/:pollId', polls.put);
-app.del('/polls/:pollId', polls.del);
+app.get('/api/v1', routes.index);
+app.get('/api/v1/polls', polls.index);
+app.post('/api/v1/polls', polls.post);
+app.get('/api/v1/polls/:pollId', polls.get);
+app.put('/api/v1/polls/:pollId', polls.put);
+app.del('/api/v1/polls/:pollId', polls.del);
 
 app.listen(app.get('port'));
 console.log('Express server listening on port ' + app.get('port'));
