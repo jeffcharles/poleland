@@ -1,0 +1,15 @@
+server {
+       listen 80;
+
+       root /vagrant/src;
+       index index.html;
+
+       server_name localhost;
+
+       location / {
+                proxy_pass http://localhost:3000;
+       }
+
+       location /static/ {
+       }
+}
