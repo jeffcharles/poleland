@@ -12,6 +12,8 @@
     - name: Add Poleland site to available-sites
       copy: src=files/poleland dest=/etc/nginx/sites-available/poleland
               owner=root group=root mode=0644
+      notify:
+        - restart nginx
     - name: Enable Poland site
       file: src=/etc/nginx/sites-available/poleland
               dest=/etc/nginx/sites-enabled/poleland owner=root group=root
