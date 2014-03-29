@@ -1,0 +1,45 @@
+/* global angular */
+angular.module('poleland.services', []).
+    factory('polls', ['$http', '$q', function($http, $q) {
+        return {
+            getPolls: function() {
+                var deferred = $q.defer();
+                $http({
+                    method: 'GET',
+                    url: '/api/v1/polls'
+                }).success(function(data) {
+                    deferred.resolve(data.map(function(poll) {
+                        return {
+                            title: poll.title,
+                            // double-encode since browser will decode once
+                            href: encodeURIComponent(encodeURIComponent(
+                                poll._links.self.href))
+                        };
+                    }));
+                }).error(function(data, status) {
+                    deferred.reject(status && status == 502 ?
+                                    'ApiServerDown' : data);
+                });
+                return deferred.promise;
+            },
+            getPoll: function(pollHref) {
+                var deferred = $q.defer();
+                $http({
+                    method: 'GET',
+                    // single-decode since browser performs one decode
+                    url: decodeURIComponent(pollHref)
+                }).success(function(data) {
+                    deferred.resolve(data);
+                }).error(function(data, status) {
+                    if(status) {
+                        switch(status) {
+                        case 404: return 'NotFound';
+                        case 502: return 'ApiServerDown';
+                        }
+                    }
+                    deferred.reject(data);
+                });
+                return deferred.promise;
+            }
+        };
+    }]);

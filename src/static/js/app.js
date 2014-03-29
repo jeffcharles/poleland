@@ -1,6 +1,7 @@
 /* global angular */
 angular.module('poleland', [
     'ngRoute',
+    'poleland.services',
     'poleland.controllers'
 ]).
     config(['$routeProvider', function($routeProvider) {

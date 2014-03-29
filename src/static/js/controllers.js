@@ -1,31 +1,27 @@
 /* global angular */
 angular.module('poleland.controllers', []).
-    controller('ListPolls', ['$scope', '$http', function($scope, $http) {
+    controller('ListPolls', ['$scope', 'polls', function($scope, polls) {
         $scope.message = 'Loading...';
         $scope.polls = [];
-        $http({
-            method: 'GET',
-            url: '/api/v1/polls'
-        }).success(function(data) {
-            $scope.message = '';
-            $scope.polls = data.map(function(poll) {
-                return {
-                    title: poll.title,
-                    href: encodeURIComponent(encodeURIComponent(
-                        poll._links.self.href))
-                };
+        polls.getPolls().
+            then(function(polls) {
+                $scope.message = '';
+                $scope.polls = polls;
+            }, function(err) {
+                switch(err) {
+                case 'ApiServerDown':
+                    $scope.message = 'API server down';
+                    break;
+                default:
+                    $scope.message = err;
+                }
             });
-        }).error(function(data, status) {
-            $scope.message = 'API returned status ' + status;
-        });
     }]).
     controller('Poll',
-               ['$scope', '$http', '$routeParams',
-                function($scope, $http, $routeParams) {
-                    $http({
-                        method: 'GET',
-                        url: decodeURIComponent($routeParams.pollHref)
-                    }).success(function(data) {
-                        $scope.poll = data;
-                    });
+               ['$scope', 'polls', '$routeParams',
+                function($scope, polls, $routeParams) {
+                    polls.getPoll($routeParams.pollHref).
+                        then(function(poll) {
+                            $scope.poll = poll;
+                        });
                 }]);
