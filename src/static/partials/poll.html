@@ -1,0 +1,13 @@
+<div class="container" ng-controller="Poll">
+  <h1>{{poll.title}}</h1>
+  <ul>
+    <li ng-repeat="question in poll.questions">
+      <p>{{question.content}}</p>
+      <ul>
+        <li ng-repeat="answer in question.answers">
+          {{answer.content}}
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>

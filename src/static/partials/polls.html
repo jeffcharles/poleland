@@ -1,6 +1,8 @@
 <div class="container" ng-controller="ListPolls">
   <p>{{message}}</p>
   <ul>
-    <li ng-repeat="poll in polls">{{poll.title}}</li>
+    <li ng-repeat="poll in polls">
+      <a href="#/polls/{{poll.href}}">{{poll.title}}</a>
+    </li>
   </ul>
 </div>
