@@ -1,4 +1,8 @@
 <div class="container" ng-controller="Poll">
+  <ol class="breadcrumb">
+    <li><a href="#/polls">Polls</a></li>
+    <li class="active">{{poll.title}}</li>
+  </ol>
   <h1>{{poll.title}}</h1>
   <ul>
     <li ng-repeat="question in poll.questions">
