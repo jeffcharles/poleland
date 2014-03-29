@@ -41,17 +41,15 @@
         </div>
       </div>
     </div>
-    <div class="container" ng-controller="ListPolls">
-      <p>{{message}}</p>
-      <ul>
-        <li ng-repeat="poll in polls">{{poll.title}}</li>
-      </ul>
-    </div>
+    <div ng-view></div>
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js">
     </script>
     <script
        src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js">
+    </script>
+    <script
+       src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-route.min.js">
     </script>
     <script src="/static/js/app.js"></script>
     <script src="/static/js/controllers.js"></script>
