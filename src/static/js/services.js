@@ -33,8 +33,12 @@ angular.module('poleland.services', []).
                 }).error(function(data, status) {
                     if(status) {
                         switch(status) {
-                        case 404: deferred.reject('NotFound'); return;
-                        case 502: deferred.reject('ApiServerDown'); return;
+                        case 404:
+                            deferred.reject('NotFound');
+                            return;
+                        case 502:
+                            deferred.reject('ApiServerDown');
+                            return;
                         }
                     }
                     deferred.reject(data);
@@ -51,8 +55,12 @@ angular.module('poleland.services', []).
                 }).error(function(data, status) {
                     if(status) {
                         switch(status) {
-                        case 404: deferred.reject('NotFound'); return;
-                        case 502: deferred.reject('ApiServerDown'); return;
+                        case 404:
+                            deferred.reject('NotFound');
+                            return;
+                        case 502:
+                            deferred.reject('ApiServerDown');
+                            return;
                         }
                     }
                     deferred.reject(data);

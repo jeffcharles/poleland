@@ -1,15 +1,16 @@
 /* global angular */
 angular.module('poleland.controllers', []).
     controller('ListPolls',
-               ['$scope', '$log', 'polls', function($scope, $log, polls) {
-                   $scope.polls = [];
-                   polls.getPolls().
-                       then(function(polls) {
-                           $scope.polls = polls;
-                       }, function(err) {
-                           $log.error(err);
-                       });
-               }]).
+               ['$scope', '$log', 'polls',
+                function($scope, $log, polls) {
+                    $scope.polls = [];
+                    polls.getPolls().
+                        then(function(polls) {
+                            $scope.polls = polls;
+                        }, function(err) {
+                            $log.error(err);
+                        });
+                }]).
     controller('Poll',
                ['$scope', '$location', '$log', 'polls', '$routeParams',
                 function($scope, $location, $log, polls, $routeParams) {
@@ -27,5 +28,5 @@ angular.module('poleland.controllers', []).
                             }, function(err) {
                                 $log.error(err);
                             });
-                    }
+                    };
                 }]);
