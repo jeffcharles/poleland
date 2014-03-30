@@ -18,10 +18,19 @@ angular.module('poleland.controllers', []).
             });
     }]).
     controller('Poll',
-               ['$scope', 'polls', '$routeParams',
-                function($scope, polls, $routeParams) {
+               ['$scope', '$location', '$log', 'polls', '$routeParams',
+                function($scope, $location, $log, polls, $routeParams) {
                     polls.getPoll($routeParams.pollHref).
                         then(function(poll) {
                             $scope.poll = poll;
                         });
+
+                    $scope.deletePoll = function() {
+                        polls.deletePoll($routeParams.pollHref).
+                            then(function() {
+                                $location.path('#/polls');
+                            }, function(err) {
+                                $log.error(err);
+                            });
+                    }
                 }]);

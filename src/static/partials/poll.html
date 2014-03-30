@@ -4,6 +4,9 @@
     <li class="active">{{poll.title}}</li>
   </ol>
   <h1>{{poll.title}}</h1>
+  <button type="button" class="btn btn-danger" ng-click="deletePoll()">
+    Delete
+  </button>
   <ul>
     <li ng-repeat="question in poll.questions">
       <p>{{question.content}}</p>

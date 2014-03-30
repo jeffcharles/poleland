@@ -40,6 +40,24 @@ angular.module('poleland.services', []).
                     deferred.reject(data);
                 });
                 return deferred.promise;
+            },
+            deletePoll: function(pollHref) {
+                var deferred = $q.defer();
+                $http({
+                    method: 'DELETE',
+                    url: decodeURIComponent(pollHref)
+                }).success(function() {
+                    deferred.resolve();
+                }).error(function(data, status) {
+                    if(status) {
+                        switch(status) {
+                        case 404: deferred.reject('NotFound'); return;
+                        case 502: deferred.reject('ApiServerDown'); return;
+                        }
+                    }
+                    deferred.reject(data);
+                });
+                return deferred.promise;
             }
         };
     }]);
