@@ -1,4 +1,4 @@
-/* global angular */
+/* global _, angular */
 angular.module('poleland.controllers', []).
     controller('ListPolls',
                ['$scope', '$log', 'polls',
@@ -10,6 +10,17 @@ angular.module('poleland.controllers', []).
                         }, function(err) {
                             $log.error(err);
                         });
+
+                    $scope.deletePoll = function(pollHref) {
+                        polls.deletePoll(decodeURIComponent(pollHref)).
+                            then(function() {
+                                _.remove($scope.polls, function(poll) {
+                                    return poll.href === pollHref;
+                                });
+                            }, function(err) {
+                                $log.error(err);
+                            });
+                    };
                 }]).
     controller('Poll',
                ['$scope', '$location', '$log', 'polls', '$routeParams',

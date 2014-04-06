@@ -12,8 +12,9 @@ angular.module('poleland.services', []).
                         return {
                             title: poll.title,
                             // double-encode since browser will decode once
-                            href: encodeURIComponent(encodeURIComponent(
-                                poll._links.self.href))
+                            anchorHref: encodeURIComponent(encodeURIComponent(
+                                poll._links.self.href)),
+                            href: encodeURIComponent(poll._links.self.href)
                         };
                     }));
                 }).error(function(data, status) {

@@ -4,8 +4,13 @@
   </ol>
   <h1>Polls</h1>
   <ul>
-    <li ng-repeat="poll in polls">
-      <a href="#/polls/{{poll.href}}">{{poll.title}}</a>
+    <li class="poll" ng-repeat="poll in polls">
+      <a href="#/polls/{{poll.anchorHref}}">{{poll.title}}</a>
+      <button type="button" class="btn btn-danger pull-right"
+              ng-click="deletePoll(poll.href)">
+        Delete
+      </button>
+      <div class="clearfix"></div>
     </li>
   </ul>
 </div>
