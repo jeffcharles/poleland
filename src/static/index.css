@@ -1,3 +1,16 @@
 body {
     padding-top: 50px;
 }
+
+li.answer {
+    list-style-position: inside;
+    list-style-type: none;
+    margin-bottom: 10px;
+}
+
+li.question {
+    border-bottom: 1px solid #ccc;
+    list-style-position: inside;
+    list-style-type: none;
+    margin-top: 5px;
+}
