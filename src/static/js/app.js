@@ -1,8 +1,10 @@
 /* global angular */
 angular.module('poleland', [
     'ngRoute',
+    'ui.bootstrap',
     'poleland.services',
-    'poleland.controllers'
+    'poleland.controllers',
+    'poleland.directives'
 ]).
     config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/polls', {

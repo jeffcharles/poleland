@@ -1,5 +1,14 @@
 /* global _, angular */
 angular.module('poleland.controllers', []).
+    controller('Confirm',
+               ['$scope', '$modalInstance', function($scope, $modalInstance) {
+                   $scope.yes = function() {
+                       $modalInstance.close();
+                   };
+                   $scope.no = function() {
+                       $modalInstance.dismiss();
+                   };
+               }]).
     controller('ListPolls',
                ['$scope', '$log', 'polls',
                 function($scope, $log, polls) {
