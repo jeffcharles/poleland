@@ -69,6 +69,10 @@ angular.module('poleland.controllers', []).
                             });
                     };
 
+                    $scope.apply = function() {
+                        polls.savePoll($routeParams.pollHref, $scope.poll);
+                    };
+
                     $scope.back = function() {
                         $location.path('#/polls');
                     };
