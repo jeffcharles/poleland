@@ -25,3 +25,8 @@ li.question {
     list-style-type: none;
     margin-top: 5px;
 }
+
+span.delete {
+    color: red;
+    cursor: pointer;
+}

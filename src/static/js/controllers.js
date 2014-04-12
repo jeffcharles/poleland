@@ -49,4 +49,14 @@ angular.module('poleland.controllers', []).
                                 $log.error(err);
                             });
                     };
+
+                    $scope.deleteAnswer = function(questionId, answerId) {
+                        var q = _.find($scope.poll.questions,
+                                        function(question) {
+                                            return question.id === questionId;
+                                        });
+                        _.remove(q.answers, function(answer) {
+                            return answer.id === answerId;
+                        });
+                    };
                 }]);

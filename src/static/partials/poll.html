@@ -14,6 +14,9 @@
       <ol>
         <li class="answer" ng-repeat="answer in question.answers">
           {{answer.content}}
+          <span class="glyphicon glyphicon-remove delete"
+                ng-click="deleteAnswer(question.id, answer.id)">
+          </span>
         </li>
       </ol>
     </li>
