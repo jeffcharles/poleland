@@ -4,13 +4,14 @@ var mocha = require('gulp-mocha');
 var gutil = require('gulp-util');
 
 gulp.task('lint', function() {
-    return gulp.src(['./src/**/*.js', './test/**/*.js'])
+    return gulp.src(['./src/**/*.js', '!./src/static/bower_components{,**}',
+                     './test/**/*.js'])
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
 });
 
 function test(srcPath) {
-    return gulp.src(srcPath)
+    return gulp.src(srcPath, {read: false})
         .pipe(mocha())
         .on('error', gutil.log);
 }
@@ -26,5 +27,6 @@ gulp.task('acceptanceTests', function() {
 gulp.task('watch', ['lint', 'commitTests', 'acceptanceTests']);
 
 gulp.task('default', ['watch'], function() {
-    gulp.watch(['./src/**/*.js', './test/**/*.js'], ['watch']);
+    gulp.watch(['./src/**/*.js', '!./src/static/bower_coponents{,**}',
+                './test/**/*.js'], ['watch']);
 });
