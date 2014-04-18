@@ -2,6 +2,7 @@
 angular.module('poleland', [
     'ngRoute',
     'ui.bootstrap',
+    'uuid4',
     'poleland.services',
     'poleland.controllers',
     'poleland.directives'

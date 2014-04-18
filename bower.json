@@ -1,0 +1,22 @@
+{
+  "name": "Poleland",
+  "version": "0.0.0",
+  "moduleType": [
+    "globals"
+  ],
+  "authors": [
+    "Jeffrey Charles <jeffreycharles@gmail.com>"
+  ],
+  "license": "BSD",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-uuid4": "~0.0.3"
+  }
+}
