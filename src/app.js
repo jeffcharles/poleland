@@ -1,17 +1,19 @@
 /* global module, process, require */
+var bodyParser = require('body-parser');
+var errorHandler = require('errorhandler');
 var express = require('express');
+var logger = require('morgan');
 var routes = require('./routes');
 var polls = require('./routes/polls');
 
 var app = express();
 
 app.set('port', process.env.PORT || 3000);
-app.use(express.logger('dev'));
-app.use(express.json());
-app.use(app.router);
+app.use(logger('dev'));
+app.use(bodyParser.json());
 
 if(app.get('env') == 'development') {
-    app.use(express.errorHandler());
+    app.use(errorHandler());
 }
 
 app.get('/api/v1', routes.index);
