@@ -12,8 +12,7 @@ gulp.task('lint', function() {
 
 function test(srcPath) {
     return gulp.src(srcPath, {read: false})
-        .pipe(mocha())
-        .on('error', gutil.log);
+        .pipe(mocha());
 }
 
 gulp.task('commitTests', function() {
