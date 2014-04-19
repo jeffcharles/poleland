@@ -1,10 +1,11 @@
+/* global require */
 var gulp = require('gulp');
 var jshint = require('gulp-jshint');
 var mocha = require('gulp-mocha');
-var gutil = require('gulp-util');
 
 gulp.task('lint', function() {
-    return gulp.src(['./src/**/*.js', '!./src/static/bower_components{,/**}',
+    return gulp.src(['./gulpfile.js',
+                     './src/**/*.js', '!./src/static/bower_components{,/**}',
                      './test/**/*.js'])
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
