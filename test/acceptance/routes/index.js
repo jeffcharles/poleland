@@ -11,7 +11,8 @@ describe('GET /api/v1', function() {
             .expect(200)
             .end(function(err, res) {
                 if(err) {
-                    return done(err);
+                    done(err);
+                    return;
                 }
                 var pollsUrlKey =
                     Object.keys(res.body._links).filter(function(rel) {

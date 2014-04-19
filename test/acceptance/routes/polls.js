@@ -37,7 +37,8 @@ describe('POST /api/v1/polls', function() {
             .expect(201)
             .end(function(err, res) {
                 if(err) {
-                    return done(err);
+                    done(err);
+                    return;
                 }
                 var resPoll = res.body;
                 delete resPoll._links;
@@ -52,7 +53,8 @@ describe('POST /api/v1/polls', function() {
                     .expect(200)
                     .end(function(err, res) {
                         if(err) {
-                            return done(err);
+                            done(err);
+                            return;
                         }
                         var resPoll = res.body;
                         delete resPoll._links;
@@ -91,7 +93,8 @@ describe('GET /api/v1/polls/:id', function() {
             .expect(200)
             .end(function(err, res) {
                 if(err) {
-                    return done(err);
+                    done(err);
+                    return;
                 }
                 assert.ok(
                     res.body._links.self.href.match(/\/api\/v1\/polls\/1/));
@@ -115,7 +118,8 @@ describe('PUT /api/v1/polls/:id', function() {
             .expect(204)
             .end(function(err) {
                 if(err) {
-                    return done(err);
+                    done(err);
+                    return;
                 }
                 request(app)
                     .get('/api/v1/polls/1')
@@ -124,7 +128,8 @@ describe('PUT /api/v1/polls/:id', function() {
                     .expect(200)
                     .end(function(err, res) {
                         if(err) {
-                            return done(err);
+                            done(err);
+                            return;
                         }
                         var resPoll = res.body;
                         delete resPoll._links;
@@ -158,7 +163,8 @@ describe('DELETE /polls/:id', function() {
             .expect(204)
             .end(function(err) {
                 if(err) {
-                    return done(err);
+                    done(err);
+                    return;
                 }
                 request(app)
                     .get('/api/v1/polls/1')
