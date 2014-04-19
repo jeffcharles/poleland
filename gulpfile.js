@@ -8,7 +8,8 @@ gulp.task('lint', function() {
                      './src/**/*.js', '!./src/static/bower_components{,/**}',
                      './test/**/*.js'])
         .pipe(jshint())
-        .pipe(jshint.reporter('default'));
+        .pipe(jshint.reporter('default'))
+        .pipe(jshint.reporter('fail'));
 });
 
 function test(srcPath) {
