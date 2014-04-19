@@ -4,7 +4,7 @@ var mocha = require('gulp-mocha');
 var gutil = require('gulp-util');
 
 gulp.task('lint', function() {
-    return gulp.src(['./src/**/*.js', '!./src/static/bower_components{,**}',
+    return gulp.src(['./src/**/*.js', '!./src/static/bower_components{,/**}',
                      './test/**/*.js'])
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
@@ -24,9 +24,4 @@ gulp.task('acceptanceTests', function() {
     return test('./test/acceptance/**/*.js');
 });
 
-gulp.task('watch', ['lint', 'commitTests', 'acceptanceTests']);
-
-gulp.task('default', ['watch'], function() {
-    gulp.watch(['./src/**/*.js', '!./src/static/bower_coponents{,**}',
-                './test/**/*.js'], ['watch']);
-});
+gulp.task('default', ['lint', 'commitTests', 'acceptanceTests']);
