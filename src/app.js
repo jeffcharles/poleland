@@ -1,4 +1,4 @@
-/* global console, module, process, require */
+/* global module, process, require */
 var express = require('express');
 var routes = require('./routes');
 var polls = require('./routes/polls');
@@ -20,8 +20,5 @@ app.post('/api/v1/polls', polls.post);
 app.get('/api/v1/polls/:pollId', polls.get);
 app.put('/api/v1/polls/:pollId', polls.put);
 app.del('/api/v1/polls/:pollId', polls.del);
-
-app.listen(app.get('port'));
-console.log('Express server listening on port ' + app.get('port'));
 
 module.exports = app;
