@@ -1,6 +1,7 @@
 /* global angular */
 angular.module('poleland.services', []).
     factory('polls', ['$http', '$q', function($http, $q) {
+        'use strict';
         return {
             getPolls: function() {
                 var deferred = $q.defer();

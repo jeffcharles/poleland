@@ -1,4 +1,6 @@
 /* global exports, require */
+'use strict';
+
 var tv4 = require('tv4');
 var db = require('../db/polls');
 var utilities = require('../utilities');

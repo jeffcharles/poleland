@@ -8,6 +8,7 @@ angular.module('poleland', [
     'poleland.directives'
 ]).
     config(['$routeProvider', function($routeProvider) {
+        'use strict';
         $routeProvider.when('/polls', {
             templateUrl: 'partials/polls.html',
             controller: 'ListPolls'

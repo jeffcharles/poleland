@@ -1,4 +1,6 @@
 /* global describe, it, require */
+'use strict';
+
 var assert = require('assert');
 var request = require('supertest');
 var app = require('./../../../src/app');

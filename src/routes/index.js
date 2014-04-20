@@ -1,4 +1,6 @@
 /* global exports, require */
+'use strict';
+
 var utilities = require('../utilities');
 
 exports.index = function(req, res) {

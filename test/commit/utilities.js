@@ -1,4 +1,6 @@
 /* global describe, it, require */
+'use strict';
+
 var assert = require('assert');
 var utilities = require('./../../src/utilities');
 

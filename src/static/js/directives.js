@@ -1,6 +1,7 @@
 /* global angular */
 angular.module('poleland.directives', []).
     directive('polelandConfirm', ['$modal', function($modal) {
+        'use strict';
         return {
             scope: {
                 method: '&polelandConfirm'
@@ -18,6 +19,7 @@ angular.module('poleland.directives', []).
         };
     }]).
     directive('polelandAdd', ['uuid4', function(uuid4) {
+        'use strict';
         return {
             restrict: 'E',
             templateUrl: 'partials/add.html',

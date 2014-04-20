@@ -1,4 +1,6 @@
 /* global module, process, require */
+'use strict';
+
 var bodyParser = require('body-parser');
 var errorHandler = require('errorhandler');
 var express = require('express');

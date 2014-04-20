@@ -2,6 +2,7 @@
 angular.module('poleland.controllers', []).
     controller('Confirm',
                ['$scope', '$modalInstance', function($scope, $modalInstance) {
+                   'use strict';
                    $scope.yes = function() {
                        $modalInstance.close();
                    };
@@ -12,6 +13,7 @@ angular.module('poleland.controllers', []).
     controller('ListPolls',
                ['$scope', '$log', 'polls',
                 function($scope, $log, polls) {
+                    'use strict';
                     $scope.polls = [];
                     polls.getPolls().
                         then(function(polls) {
@@ -34,6 +36,7 @@ angular.module('poleland.controllers', []).
     controller('Poll',
                ['$scope', '$location', '$log', 'polls', '$routeParams',
                 function($scope, $location, $log, polls, $routeParams) {
+                    'use strict';
                     polls.getPoll($routeParams.pollHref).
                         then(function(poll) {
                             $scope.poll = poll;

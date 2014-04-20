@@ -1,4 +1,6 @@
 /* global exports */
+'use strict';
+
 var polls = {
     '1': {
         title: 'Random stuff',
