@@ -29,3 +29,8 @@ li.question {
 span.delete {
     color: red;
 }
+
+span.move {
+    color: black;
+    cursor: move;
+}

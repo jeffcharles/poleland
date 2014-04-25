@@ -14,6 +14,10 @@
       <ol>
         <li class="answer" ng-repeat="answer in question.answers">
           {{answer.content}}
+          <button type="button" class="btn btn-link">
+            <span class="glyphicon glyphicon-move move"></span>
+            <span class="sr-only">Move answer</span>
+          </button>
           <button type="button" class="btn btn-link"
                   ng-click="deleteAnswer(question.id, answer.id)">
             <span class="glyphicon glyphicon-remove delete"></span>
