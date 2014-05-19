@@ -46,7 +46,8 @@ angular.module('poleland.controllers', []).
 
                     $scope.sortableOptions = {
                         cancel: 'button:not(.move)',
-                        cursor: 'move'
+                        cursor: 'move',
+                        handle: 'button.move'
                     };
 
                     $scope.deletePoll = function() {
