@@ -44,6 +44,11 @@ angular.module('poleland.controllers', []).
                             $log.error(err);
                         });
 
+                    $scope.sortableOptions = {
+                        cancel: 'button:not(.move)',
+                        cursor: 'move'
+                    };
+
                     $scope.deletePoll = function() {
                         polls.deletePoll($routeParams.pollHref).
                             then(function() {
