@@ -34,8 +34,8 @@ angular.module('poleland.controllers', []).
                     };
                 }]).
     controller('Poll',
-               ['$scope', '$location', '$log', 'polls', '$routeParams',
-                function($scope, $location, $log, polls, $routeParams) {
+               ['$scope', '$location', '$log', 'polls', '$routeParams', '_',
+                function($scope, $location, $log, polls, $routeParams, _) {
                     'use strict';
                     polls.getPoll($routeParams.pollHref).
                         then(function(poll) {

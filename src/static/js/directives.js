@@ -18,7 +18,7 @@ angular.module('poleland.directives', []).
             }
         };
     }]).
-    directive('polelandAdd', ['uuid4', function(uuid4) {
+    directive('polelandAdd', ['_', 'uuid4', function(_, uuid4) {
         'use strict';
         return {
             restrict: 'E',

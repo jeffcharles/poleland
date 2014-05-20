@@ -1,4 +1,4 @@
-/* global angular */
+/* global angular, window */
 angular.module('poleland', [
     'ngRoute',
     'ui.bootstrap',
@@ -19,4 +19,5 @@ angular.module('poleland', [
             controller: 'Poll'
         });
         $routeProvider.otherwise({redirectTo: '/polls'});
-    }]);
+    }]).
+    constant('_', window._);
