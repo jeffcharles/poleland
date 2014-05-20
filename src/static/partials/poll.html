@@ -58,6 +58,10 @@
       <poleland-add add-to="question.answers" text="Add answer" />
     </li>
   </ol>
+  <div>
+    <poleland-add add-to="poll.questions" text="Add question"
+                  props-to-merge="{ answers: [] }" />
+  </div>
   <button type="button" class="btn btn-primary" ng-click="save()">Save</button>
   <button type="button" class="btn btn-primary" ng-click="apply()">
     Apply

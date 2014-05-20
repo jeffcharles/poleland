@@ -25,7 +25,8 @@ angular.module('poleland.directives', []).
             templateUrl: 'partials/add.html',
             scope: {
                 addTo: '&',
-                text: '@'
+                text: '@',
+                propsToMerge: '&'
             },
             link: function(scope) {
                 scope.showAddArea = false;
@@ -38,10 +39,11 @@ angular.module('poleland.directives', []).
                 };
                 scope.done = function() {
                     scope.showAddArea = false;
-                    scope.addTo().push({
+                    var element = _.merge({
                         id: uuid4.generate(),
                         content: scope.itemToAdd
-                    });
+                    }, scope.propsToMerge());
+                    scope.addTo().push(element);
                 };
             }
         };
