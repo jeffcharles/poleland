@@ -59,6 +59,10 @@ angular.module('poleland.controllers', []).
                             });
                     };
 
+                    $scope.deleteQuestion = function(questionId) {
+                        _.remove($scope.poll.questions, { 'id': questionId });
+                    };
+
                     $scope.canMoveAnswerUp = function(questionId, answerId) {
                         var question =
                                 _.find($scope.poll.questions,

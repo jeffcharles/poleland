@@ -10,7 +10,12 @@
   <div class="clearfix"></div>
   <ol>
     <li class="question" ng-repeat="question in poll.questions">
-      <p>{{question.content}}</p>
+      {{question.content}}
+      <button title="delete" type="button" class="btn btn-link delete"
+              ng-click="deleteQuestion(question.id)">
+        <span class="glyphicon glyphicon-remove"></span>
+        <span class="sr-only">Delete question</span>
+      </button>
       <ol ui-sortable="sortableOptions" ng-model="question.answers">
         <li class="answer" ng-repeat="answer in question.answers">
           {{answer.content}}
