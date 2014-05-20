@@ -2,6 +2,19 @@ body {
     padding-top: 50px;
 }
 
+button.delete {
+    color: red;
+}
+
+button.move {
+    color: black;
+    cursor: move;
+}
+
+button.move:hover {
+    color: black;
+}
+
 button.move-arrow {
     color: black;
 }
@@ -32,13 +45,4 @@ li.question {
     list-style-position: inside;
     list-style-type: none;
     margin-top: 5px;
-}
-
-span.delete {
-    color: red;
-}
-
-span.move {
-    color: black;
-    cursor: move;
 }
