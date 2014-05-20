@@ -59,6 +59,48 @@ angular.module('poleland.controllers', []).
                             });
                     };
 
+                    $scope.canMoveAnswerUp = function(questionId, answerId) {
+                        var question =
+                                _.find($scope.poll.questions,
+                                       { 'id': questionId });
+                        var answerIndex =
+                                _.findIndex(question.answers,
+                                            { 'id': answerId });
+                        return answerIndex > 0;
+                    };
+
+                    $scope.canMoveAnswerDown = function(questionId, answerId) {
+                        var question =
+                                _.find($scope.poll.questions,
+                                       { 'id': questionId });
+                        var answerIndex =
+                                _.findIndex(question.answers,
+                                            { 'id': answerId });
+                        return answerIndex < question.answers.length - 1;
+                    };
+
+                    function moveAnswer(amount, questionId, answerId) {
+                        var questionIndex =
+                                _.findIndex($scope.poll.questions,
+                                            { 'id': questionId });
+                        var answers =
+                                $scope.poll.questions[questionIndex].answers;
+                        var answerIndex =
+                                _.findIndex(answers, { 'id': answerId });
+                        var priorAnswer = answers[answerIndex + amount];
+                        answers[answerIndex + amount] = answers[answerIndex];
+                        answers[answerIndex] = priorAnswer;
+                        $scope.poll.questions[questionIndex].answers = answers;
+                    }
+
+                    $scope.moveAnswerUp = function(questionId, answerId) {
+                        moveAnswer(-1, questionId, answerId);
+                    };
+
+                    $scope.moveAnswerDown = function(questionId, answerId) {
+                        moveAnswer(1, questionId, answerId);
+                    };
+
                     $scope.deleteAnswer = function(questionId, answerId) {
                         var q = _.find($scope.poll.questions,
                                         function(question) {

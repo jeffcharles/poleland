@@ -2,6 +2,14 @@ body {
     padding-top: 50px;
 }
 
+button.move-arrow {
+    color: black;
+}
+
+button.move-arrow:disabled {
+    color: gray;
+}
+
 button.poll-action {
     bottom: 20px;
     position: relative;

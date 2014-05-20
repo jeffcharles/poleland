@@ -14,11 +14,24 @@
       <ol ui-sortable="sortableOptions" ng-model="question.answers">
         <li class="answer" ng-repeat="answer in question.answers">
           {{answer.content}}
-          <button type="button" class="btn btn-link move">
+          <button title="Move" type="button" class="btn btn-link move">
             <span class="glyphicon glyphicon-move move"></span>
             <span class="sr-only">Move answer</span>
           </button>
-          <button type="button" class="btn btn-link"
+          <button title="Move up" type="button" class="btn btn-link move-arrow"
+                  ng-click="moveAnswerUp(question.id, answer.id)"
+                  ng-disabled="!canMoveAnswerUp(question.id, answer.id)">
+            <span class="glyphicon glyphicon-arrow-up"></span>
+            <span class="sr-only">Move answer up</span>
+          </button>
+          <button title="Move down" type="button"
+                  class="btn btn-link move-arrow"
+                  ng-click="moveAnswerDown(question.id, answer.id)"
+                  ng-disabled="!canMoveAnswerDown(question.id, answer.id)">
+            <span class="glyphicon glyphicon-arrow-down"></span>
+            <span class="sr-only">Move answer down</span>
+          </button>
+          <button title="Delete" type="button" class="btn btn-link"
                   ng-click="deleteAnswer(question.id, answer.id)">
             <span class="glyphicon glyphicon-remove delete"></span>
             <span class="sr-only">Delete answer</span>
