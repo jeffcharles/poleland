@@ -50,6 +50,39 @@ angular.module('poleland.controllers', []).
                         handle: 'button.move'
                     };
 
+                    $scope.canMoveQuestionUp = function(questionId) {
+                        var questionIndex =
+                                _.findIndex($scope.poll.questions,
+                                            { 'id': questionId });
+                        return questionIndex > 0;
+                    };
+
+                    $scope.canMoveQuestionDown = function(questionId) {
+                        var questionIndex =
+                                _.findIndex($scope.poll.questions,
+                                            { 'id': questionId });
+                        return questionIndex < $scope.poll.questions.length - 1;
+                    };
+
+                    function moveQuestion(questionId, amount) {
+                        var questions = $scope.poll.questions;
+                        var questionIndex = _.findIndex(questions,
+                                                       { 'id': questionId });
+                        var priorQuestion = questions[questionIndex + amount];
+                        questions[questionIndex + amount] =
+                            questions[questionIndex];
+                        questions[questionIndex] = priorQuestion;
+                        $scope.poll.questions = questions;
+                    }
+
+                    $scope.moveQuestionUp = function(questionId) {
+                        moveQuestion(questionId, -1);
+                    };
+
+                    $scope.moveQuestionDown = function(questionId) {
+                        moveQuestion(questionId, 1);
+                    };
+
                     $scope.deletePoll = function() {
                         polls.deletePoll($routeParams.pollHref).
                             then(function() {

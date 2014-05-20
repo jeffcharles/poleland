@@ -11,6 +11,18 @@
   <ol>
     <li class="question" ng-repeat="question in poll.questions">
       {{question.content}}
+      <button title="Move up" type="button" class="btn btn-link move-arrow"
+              ng-click="moveQuestionUp(question.id)"
+              ng-disabled="!canMoveQuestionUp(question.id)">
+        <span class="glyphicon glyphicon-arrow-up"></span>
+        <span class="sr-only">Move answer up</span>
+      </button>
+      <button title="Move down" type="button" class="btn btn-link move-arrow"
+              ng-click="moveQuestionDown(question.id)"
+              ng-disabled="!canMoveQuestionDown(question.id)">
+        <span class="glyphicon glyphicon-arrow-down"></span>
+        <span class="sr-only">Move answer down</span>
+      </button>
       <button title="delete" type="button" class="btn btn-link delete"
               ng-click="deleteQuestion(question.id)">
         <span class="glyphicon glyphicon-remove"></span>
