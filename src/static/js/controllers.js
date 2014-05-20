@@ -50,24 +50,29 @@ angular.module('poleland.controllers', []).
                         handle: 'button.move'
                     };
 
+                    function getQuestionIndexFromId(questionId) {
+                        return _.findIndex($scope.poll.questions,
+                                           { 'id': questionId });
+                    }
+
+                    function getQuestionFromId(questionId) {
+                        return _.find($scope.poll.questions,
+                                      { 'id': questionId });
+                    }
+
                     $scope.canMoveQuestionUp = function(questionId) {
-                        var questionIndex =
-                                _.findIndex($scope.poll.questions,
-                                            { 'id': questionId });
+                        var questionIndex = getQuestionIndexFromId(questionId);
                         return questionIndex > 0;
                     };
 
                     $scope.canMoveQuestionDown = function(questionId) {
-                        var questionIndex =
-                                _.findIndex($scope.poll.questions,
-                                            { 'id': questionId });
+                        var questionIndex = getQuestionIndexFromId(questionId);
                         return questionIndex < $scope.poll.questions.length - 1;
                     };
 
                     function moveQuestion(questionId, amount) {
                         var questions = $scope.poll.questions;
-                        var questionIndex = _.findIndex(questions,
-                                                       { 'id': questionId });
+                        var questionIndex = getQuestionIndexFromId(questionId);
                         var priorQuestion = questions[questionIndex + amount];
                         questions[questionIndex + amount] =
                             questions[questionIndex];
@@ -97,9 +102,7 @@ angular.module('poleland.controllers', []).
                     };
 
                     $scope.canMoveAnswerUp = function(questionId, answerId) {
-                        var question =
-                                _.find($scope.poll.questions,
-                                       { 'id': questionId });
+                        var question = getQuestionFromId(questionId);
                         var answerIndex =
                                 _.findIndex(question.answers,
                                             { 'id': answerId });
@@ -107,9 +110,7 @@ angular.module('poleland.controllers', []).
                     };
 
                     $scope.canMoveAnswerDown = function(questionId, answerId) {
-                        var question =
-                                _.find($scope.poll.questions,
-                                       { 'id': questionId });
+                        var question = getQuestionFromId(questionId);
                         var answerIndex =
                                 _.findIndex(question.answers,
                                             { 'id': answerId });
@@ -117,9 +118,7 @@ angular.module('poleland.controllers', []).
                     };
 
                     function moveAnswer(amount, questionId, answerId) {
-                        var questionIndex =
-                                _.findIndex($scope.poll.questions,
-                                            { 'id': questionId });
+                        var questionIndex = getQuestionIndexFromId(questionId);
                         var answers =
                                 $scope.poll.questions[questionIndex].answers;
                         var answerIndex =
@@ -139,10 +138,7 @@ angular.module('poleland.controllers', []).
                     };
 
                     $scope.deleteAnswer = function(questionId, answerId) {
-                        var q = _.find($scope.poll.questions,
-                                        function(question) {
-                                            return question.id === questionId;
-                                        });
+                        var q = getQuestionFromId(questionId);
                         _.remove(q.answers, function(answer) {
                             return answer.id === answerId;
                         });
