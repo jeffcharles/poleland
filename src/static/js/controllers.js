@@ -144,6 +144,20 @@ angular.module('poleland.controllers', []).
                         });
                     };
 
+                    var editingQuestions = {};
+
+                    $scope.isEditingQuestion = function(questionId) {
+                        return questionId in editingQuestions;
+                    };
+
+                    $scope.editQuestion = function(questionId) {
+                        editingQuestions[questionId] = true;
+                    };
+
+                    $scope.doneEditingQuestion = function(questionId) {
+                        delete editingQuestions[questionId];
+                    };
+
                     $scope.save = function() {
                         polls.savePoll($routeParams.pollHref, $scope.poll).
                             then(function() {
