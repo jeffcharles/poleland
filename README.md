@@ -7,7 +7,7 @@ some other random technologies.
 Deploying a dev instance
 ------------------------
 
-1. Install Vagrant (I'm running version 1.5.1)
+1. Install Vagrant (I'm running version 1.6.2)
 2. Install Ansible (I installed through Pip and am running version 1.5.3)
 3. Run `vagrant up`
 
