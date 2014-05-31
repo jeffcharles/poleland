@@ -7,8 +7,10 @@ var mocha = require('gulp-mocha');
 
 gulp.task('lint', function() {
     return gulp.src(['./gulpfile.js',
-                     './src/**/*.js', '!./src/static/bower_components{,/**}',
-                     './test/**/*.js'])
+                     './api/src/**/*.js',
+                     './api/test/**/*.js',
+                     './src/static/**/*.js',
+                     '!./src/static/bower_components{,/**}'])
         .pipe(jshint())
         .pipe(jshint.reporter('default'))
         .pipe(jshint.reporter('fail'));
@@ -20,11 +22,11 @@ function test(srcPath) {
 }
 
 gulp.task('commitTests', function() {
-    return test('./test/commit/**/*.js');
+    return test('./api/test/commit/**/*.js');
 });
 
 gulp.task('acceptanceTests', function() {
-    return test('./test/acceptance/**/*.js');
+    return test('./api/test/acceptance/**/*.js');
 });
 
 gulp.task('default', ['lint', 'commitTests', 'acceptanceTests']);
