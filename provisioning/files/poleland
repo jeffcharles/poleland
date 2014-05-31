@@ -1,7 +1,7 @@
 server {
        listen 80;
 
-       root /vagrant/src;
+       root /vagrant/ui;
        index index.html;
 
        server_name localhost;

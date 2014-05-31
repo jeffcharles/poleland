@@ -9,8 +9,8 @@ gulp.task('lint', function() {
     return gulp.src(['./gulpfile.js',
                      './api/src/**/*.js',
                      './api/test/**/*.js',
-                     './src/static/**/*.js',
-                     '!./src/static/bower_components{,/**}'])
+                     './ui/static/**/*.js',
+                     '!./ui/static/bower_components{,/**}'])
         .pipe(jshint())
         .pipe(jshint.reporter('default'))
         .pipe(jshint.reporter('fail'));
