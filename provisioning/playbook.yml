@@ -29,10 +29,6 @@
       npm: name=bower global=yes version=1.3.2
     - name: Install Bower dependencies
       command: /usr/local/bin/bower install --allow-root chdir=/vagrant
-    - name: Install gulp
-      npm: name=gulp global=yes version=3.6.0
-    - name: Install NPM dependencies
-      npm: path=/vagrant
   handlers:
     - name: restart nginx
       service: name=nginx state=restarted
