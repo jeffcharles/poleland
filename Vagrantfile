@@ -60,11 +60,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "docker" do |docker|
     docker.build_image "/vagrant/api", args: "-t poleland-api"
     docker.run "poleland-api", args: "-p 3000:3000"
-  end
 
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "provisioning/playbook.yml"
-    ansible.sudo = true
+    docker.build_image "/vagrant/ui", args: "-t poleland-ui"
+    docker.run "poleland-ui", args: "-p 80:80"
   end
 
   # Enable provisioning with Puppet stand alone.  Puppet manifests
