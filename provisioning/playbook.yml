@@ -28,11 +28,11 @@
       shell: docker build -t poleland-api /vagrant/api && touch /home/vagrant/poleland-api-built
                creates=/home/vagrant/poleland-api-built
     - name: Run API docker container
-      shell: docker run -d --name=poleland-api -p 3000:3000 poleland-api && touch /home/vagrant/poleland-api-running
+      shell: docker run -d --name=poleland-api-container -p 3000:3000 -v /vagrant/api:/app -w /app/src poleland-api && touch /home/vagrant/poleland-api-running
                creates=/home/vagrant/poleland-api-running
     - name: Build UI docker image
       shell: docker build -t poleland-ui /vagrant/ui && touch /home/vagrant/poleland-ui-built
                creates=/home/vagrant/poleland-ui-built
     - name: Run UI docker container
-      shell: docker run -d --name=poleland-ui -p 80:80 poleland-ui && touch /home/vagrant/poleland-ui-running
+      shell: docker run -d --name=poleland-ui-container -p 80:80 poleland-ui && touch /home/vagrant/poleland-ui-running
                creates=/home/vagrant/poleland-ui-running
