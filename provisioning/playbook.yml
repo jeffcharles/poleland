@@ -34,5 +34,5 @@
       shell: docker build -t poleland-ui /vagrant/ui && touch /home/vagrant/poleland-ui-built
                creates=/home/vagrant/poleland-ui-built
     - name: Run UI docker container
-      shell: docker run -d --name=poleland-ui-container -p 80:80 poleland-ui && touch /home/vagrant/poleland-ui-running
+      shell: docker run -d --name=poleland-ui-container -p 80:80 -v /vagrant/ui:/vagrant/ui poleland-ui && touch /home/vagrant/poleland-ui-running
                creates=/home/vagrant/poleland-ui-running
