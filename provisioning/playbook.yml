@@ -1,0 +1,38 @@
+---
+- hosts: all
+  tasks:
+    - name: Update package cache
+      apt: update_cache=yes
+    - name: Install Node.js
+      shell: wget http://nodejs.org/dist/v0.10.24/node-v0.10.24-linux-x64.tar.gz -O - | tar -C /usr/local --strip-components 1 -xzf -
+               creates=/usr/local/bin/node
+    - name: Install git
+      apt: pkg=git-core
+    - name: Install bower
+      npm: name=bower global=yes version=1.3.2
+    - name: Install Bower dependencies
+      command: /usr/local/bin/bower install --allow-root chdir=/vagrant/ui
+    - name: Install gulp
+      npm: name=gulp global=yes version=3.6.0
+    - name: Install NPM dependencies
+      npm: path=/vagrant/api
+    - name: Install docker
+      apt: pkg=docker.io
+    - name: Deal docker PATH bullshit
+      file: src=/usr/bin/docker.io dest=/usr/bin/docker state=link
+    - name: Install pip
+      apt: pkg=python-pip
+    - name: Install docker-py
+      pip: name=docker-py version=0.3.1
+    - name: Build API docker image
+      shell: docker build -t poleland-api /vagrant/api && touch /home/vagrant/poleland-api-built
+               creates=/home/vagrant/poleland-api-built
+    - name: Run API docker container
+      shell: docker run -d --name=poleland-api -p 3000:3000 poleland-api && touch /home/vagrant/poleland-api-running
+               creates=/home/vagrant/poleland-api-running
+    - name: Build UI docker image
+      shell: docker build -t poleland-ui /vagrant/ui && touch /home/vagrant/poleland-ui-built
+               creates=/home/vagrant/poleland-ui-built
+    - name: Run UI docker container
+      shell: docker run -d --name=poleland-ui -p 80:80 poleland-ui && touch /home/vagrant/poleland-ui-running
+               creates=/home/vagrant/poleland-ui-running

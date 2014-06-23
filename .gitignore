@@ -1,5 +1,5 @@
 /.vagrant/
-/node_modules/
+/api/node_modules/
 /ui/static/bower_components/
 
 /coverage.html
