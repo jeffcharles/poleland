@@ -20,10 +20,6 @@
       apt: pkg=docker.io
     - name: Deal docker PATH bullshit
       file: src=/usr/bin/docker.io dest=/usr/bin/docker state=link
-    - name: Install pip
-      apt: pkg=python-pip
-    - name: Install docker-py
-      pip: name=docker-py version=0.3.1
     - name: Build API docker image
       shell: docker build -t poleland-api /vagrant/api && touch /home/vagrant/poleland-api-built
                creates=/home/vagrant/poleland-api-built
