@@ -4,7 +4,7 @@
     - name: Update package cache
       apt: update_cache=yes
     - name: Install Node.js
-      shell: wget http://nodejs.org/dist/v0.10.24/node-v0.10.24-linux-x64.tar.gz -O - | tar -C /usr/local --strip-components 1 -xzf -
+      shell: wget http://nodejs.org/dist/v0.10.28/node-v0.10.28-linux-x64.tar.gz -O - | tar -C /usr/local --strip-components 1 -xzf -
                creates=/usr/local/bin/node
     - name: Install git
       apt: pkg=git-core
