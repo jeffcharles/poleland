@@ -16,10 +16,14 @@
       npm: name=gulp global=yes version=3.6.0
     - name: Install NPM dependencies
       npm: path=/vagrant/api
+    - name: Install apt-transport-https
+      apt: pkg=apt-transport-https
+    - name: Add key for Docker apt repo
+      apt_key: keyserver=hkp://keyserver.ubuntu.com:80 id=A88D21E9 state=present
+    - name: Add Docker repo to apt sources list
+      apt_repository: repo='deb https://get.docker.io/ubuntu docker main' state=present
     - name: Install docker
-      apt: pkg=docker.io
-    - name: Deal docker PATH bullshit
-      file: src=/usr/bin/docker.io dest=/usr/bin/docker state=link
+      apt: pkg=lxc-docker=1.0.1
     - name: Build API docker image
       shell: docker build -t poleland-api /vagrant/api && touch /home/vagrant/poleland-api-built
                creates=/home/vagrant/poleland-api-built
