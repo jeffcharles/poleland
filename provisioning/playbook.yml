@@ -24,15 +24,18 @@
       apt_repository: repo='deb https://get.docker.io/ubuntu docker main' state=present
     - name: Install docker
       apt: pkg=lxc-docker=1.0.1
+    - name: Install pip
+      apt: pkg=python-pip
+    - name: Install docker-py
+      pip: name=docker-py version=0.3.1
     - name: Build API docker image
-      shell: docker build -t poleland-api /vagrant/api && touch /home/vagrant/poleland-api-built
-               creates=/home/vagrant/poleland-api-built
+      docker_image: path=/vagrant/api name=poleland-api state=present
     - name: Run API docker container
-      shell: docker run -d --name=poleland-api-container -v /vagrant/api:/app:ro -w /app/src poleland-api && touch /home/vagrant/poleland-api-running
-               creates=/home/vagrant/poleland-api-running
+      docker: image=poleland-api name=poleland-api-container
+                volumes=/vagrant/api:/usr/src/node state=running
     - name: Build UI docker image
-      shell: docker build -t poleland-ui /vagrant/ui && touch /home/vagrant/poleland-ui-built
-               creates=/home/vagrant/poleland-ui-built
+      docker_image: path=/vagrant/ui name=poleland-ui state=present
     - name: Run UI docker container
-      shell: docker run -d --name=poleland-ui-container -p 80:80 --link poleland-api-container:api -v /vagrant/ui:/vagrant/ui:ro poleland-ui && touch /home/vagrant/poleland-ui-running
-               creates=/home/vagrant/poleland-ui-running
+      docker: image=poleland-ui name=poleland-ui-container ports=80:80
+                links=poleland-api-container:api
+                volumes=/vagrant/ui:/vagrant/ui state=running
