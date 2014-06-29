@@ -4,11 +4,18 @@ Poleland
 This is a random project I'm using to learn more about Node.js, Angular, and
 some other random technologies.
 
+Docker Container Topology
+-------------------------
+
+* `api` is a Node.js HTTP API around poll management
+* `routing` provides edge routing into the other containers
+* `ui` is a set of static files providing a web UI around the API
+
 Deploying a dev instance
 ------------------------
 
-1. Install Vagrant (I'm running version 1.6.2)
-2. Install Ansible (I installed through Pip and am running version 1.5.3)
+1. Install Vagrant (I'm running version 1.6.3)
+2. Install Ansible (I installed through Pip and am running version 1.6.3)
 3. Run `vagrant up`
 
 How to workaround compiler errors on OS X
