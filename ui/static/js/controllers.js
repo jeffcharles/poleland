@@ -35,7 +35,9 @@ angular.module('poleland.controllers', []).
                 }]).
     controller('Poll',
                ['$scope', '$location', '$log', 'polls', '$routeParams', '_',
-                function($scope, $location, $log, polls, $routeParams, _) {
+                'uuid4',
+                function($scope, $location, $log, polls, $routeParams, _,
+                         uuid4) {
                     'use strict';
                     polls.getPoll($routeParams.pollHref).
                         then(function(poll) {
@@ -156,6 +158,23 @@ angular.module('poleland.controllers', []).
 
                     $scope.doneEditingQuestion = function(questionId) {
                         delete editingQuestions[questionId];
+                    };
+
+                    $scope.addQuestion = function(questionContent) {
+                        var question = {
+                            id: uuid4.generate(),
+                            content: questionContent,
+                            answers: []
+                        };
+                        $scope.poll.questions.push(question);
+                    };
+
+                    $scope.addAnswer = function(answerContent, scope) {
+                        var answer = {
+                            id: uuid4.generate(),
+                            content: answerContent
+                        };
+                        scope.question.answers.push(answer);
                     };
 
                     $scope.save = function() {

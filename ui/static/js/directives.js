@@ -18,15 +18,15 @@ angular.module('poleland.directives', []).
             }
         };
     }]).
-    directive('polelandAdd', ['_', 'uuid4', function(_, uuid4) {
+    directive('polelandAdd', [function() {
         'use strict';
         return {
             restrict: 'E',
             templateUrl: 'partials/add.html',
             scope: {
-                addTo: '&',
                 text: '@',
-                propsToMerge: '&'
+                doneFunc: '&',
+                scope: '&'
             },
             link: function(scope) {
                 scope.showAddArea = false;
@@ -39,11 +39,7 @@ angular.module('poleland.directives', []).
                 };
                 scope.done = function() {
                     scope.showAddArea = false;
-                    var element = _.merge({
-                        id: uuid4.generate(),
-                        content: scope.itemToAdd
-                    }, scope.propsToMerge());
-                    scope.addTo().push(element);
+                    scope.doneFunc()(scope.itemToAdd, scope.scope());
                 };
             }
         };

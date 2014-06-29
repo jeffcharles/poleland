@@ -71,12 +71,12 @@
           </button>
         </li>
       </ol>
-      <poleland-add add-to="question.answers" text="Add answer" />
+      <poleland-add text="Add answer" done-func="addAnswer"
+                    scope="{ question: question }" />
     </li>
   </ol>
   <div>
-    <poleland-add add-to="poll.questions" text="Add question"
-                  props-to-merge="{ answers: [] }" />
+    <poleland-add text="Add question" done-func="addQuestion" />
   </div>
   <button type="button" class="btn btn-primary" ng-click="save()">Save</button>
   <button type="button" class="btn btn-primary" ng-click="apply()">
