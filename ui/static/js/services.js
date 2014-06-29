@@ -91,6 +91,20 @@ angular.module('poleland.services', []).
                     deferred.reject(data);
                 });
                 return deferred.promise;
+            },
+            createPoll: function(poll) {
+                var deferred = $q.defer();
+                $http({
+                    method: 'POST',
+                    url: '/api/v1/polls',
+                    data: poll
+                }).success(function(data, status, headers) {
+                    deferred.resolve(encodeURIComponent(headers('location')));
+                }).error(function(data, status) {
+                    deferred.reject(status && status === 502 ?
+                                    'ApiServerDown' : data);
+                });
+                return deferred.promise;
             }
         };
     }]);

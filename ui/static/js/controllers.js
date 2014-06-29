@@ -11,8 +11,8 @@ angular.module('poleland.controllers', []).
                    };
                }]).
     controller('ListPolls',
-               ['$scope', '$log', 'polls',
-                function($scope, $log, polls) {
+               ['$scope', '$location', '$log', 'polls',
+                function($scope, $location, $log, polls) {
                     'use strict';
                     $scope.polls = [];
                     polls.getPolls().
@@ -21,6 +21,18 @@ angular.module('poleland.controllers', []).
                         }, function(err) {
                             $log.error(err);
                         });
+
+                    $scope.createPoll = function(pollTitle) {
+                        polls.createPoll({
+                            title: pollTitle,
+                            questions: []
+                        }).
+                            then(function(pollHref) {
+                                $location.path('/polls/' + pollHref);
+                            }, function(err) {
+                                $log.error(err);
+                            });
+                    };
 
                     $scope.deletePoll = function(pollHref) {
                         polls.deletePoll(decodeURIComponent(pollHref)).

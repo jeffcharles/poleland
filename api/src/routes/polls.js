@@ -50,8 +50,7 @@ var pollSchema = {
                     }
                 },
                 required: ['id', 'content', 'answers']
-            },
-            minItems: 1
+            }
         }
     },
     required: ['title', 'questions']

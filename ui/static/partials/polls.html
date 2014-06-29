@@ -3,6 +3,7 @@
     <li class="active">Polls</li>
   </ol>
   <h1>Polls</h1>
+  <poleland-add text="Create poll" done-func="createPoll"></poleland-add>
   <ul>
     <li class="poll" ng-repeat="poll in polls">
       <a href="#/polls/{{poll.anchorHref}}">{{poll.title}}</a>
