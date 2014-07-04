@@ -56,21 +56,6 @@ var pollSchema = {
     required: ['title', 'questions']
 };
 
-function sendPollNotFoundError(req, res) {
-    res.format({
-        'application/json': function() {
-            res.statusCode = 404;
-            res.send({
-                type: utilities.convertRelUrlToAbs(
-                    req,
-                    '/api/v1/errors/poll-not-found'
-                ),
-                title: 'Poll not found'
-            });
-        }
-    });
-}
-
 function sendPollNotValidError(req, res, error) {
     res.format({
         'application/json': function() {
@@ -90,7 +75,7 @@ function sendPollNotValidError(req, res, error) {
 function resourceOperation(req, res, operation) {
     db.getPoll(req.param('pollId'), function(poll) {
         if(!poll) {
-            sendPollNotFoundError(req, res);
+            utilities.sendPollNotFoundError(req, res);
         } else {
             operation(poll);
         }
