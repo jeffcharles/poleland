@@ -15,7 +15,7 @@ Deploying a dev instance
 ------------------------
 
 1. Install Vagrant (I'm running version 1.6.3)
-2. Install Ansible (I installed through Pip and am running version 1.6.3)
+2. Install Ansible (I installed through Pip and am running version 1.6.6)
 3. Run `vagrant up`
 
 How to workaround compiler errors on OS X

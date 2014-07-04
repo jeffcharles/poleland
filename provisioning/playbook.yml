@@ -25,7 +25,7 @@
     - name: Add Docker repo to apt sources list
       apt_repository: repo='deb https://get.docker.io/ubuntu docker main' state=present
     - name: Install docker
-      apt: pkg=lxc-docker=1.0.1
+      apt: pkg=lxc-docker=1.1.0
     - name: Install pip
       apt: pkg=python-pip
     - name: Install docker-py
