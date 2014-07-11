@@ -11,7 +11,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     couchbase.vm.network :forwarded_port, guest: 8091, host: 8091
 
-    couchbase.vm.provision "shell", path: "provisioning/couchbase.sh"
+    couchbase.vm.provision "ansible" do |ansible|
+      ansible.playbook = "provisioning/couchbase-playbook.yml"
+      ansible.sudo = true
+    end
   end
 
   config.vm.define "web" do |web|
