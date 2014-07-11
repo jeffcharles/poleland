@@ -14,6 +14,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     couchbase.vm.provision "ansible" do |ansible|
       ansible.playbook = "provisioning/couchbase-playbook.yml"
       ansible.sudo = true
+      ansible.extra_vars = {
+        admin_user: "poleland",
+        admin_password: "poleland"
+      }
     end
   end
 
