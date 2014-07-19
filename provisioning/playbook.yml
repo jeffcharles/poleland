@@ -16,6 +16,17 @@
       command: /usr/local/bin/bower install --allow-root chdir=/vagrant/ui
     - name: Install gulp
       npm: name=gulp global=yes version=3.6.0
+    - name: Add Couchbase apt repo
+      get_url: url=http://packages.couchbase.com/ubuntu/couchbase-ubuntu1404.list
+                 dest=/etc/apt/sources.list.d/couchbase.list
+    - name: Add Couchbase GPG key
+      apt_key: url=http://packages.couchbase.com/ubuntu/couchbase.key
+                 state=present
+    - name: Install libriaries required for Couchbase SDK
+      apt: pkg={{ item }} update_cache=yes
+      with_items:
+        - libcouchbase2-libevent
+        - libcouchbase-dev
     - name: Install NPM dependencies for API
       npm: path=/vagrant/api
     - name: Install apt-transport-https
