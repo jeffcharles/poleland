@@ -74,7 +74,7 @@ var pollsForCb = {};
 for(var pollId in polls) {
     pollsForCb['polls/' + pollId] = { value: polls[pollId] };
 }
-db.setMulti(pollsForCb, null, function(err) {
+db.addMulti(pollsForCb, null, function(err) {
     if(err) {
         console.log(err);
     }
