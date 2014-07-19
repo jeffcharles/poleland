@@ -21,3 +21,10 @@
     - name: Configure cluster
       command: /opt/couchbase/bin/couchbase-cli cluster-init -c 127.0.0.1:8091 --cluster-init-username={{ admin_user }} --cluster-init-password={{ admin_password }} --cluster-init-port=8091 --cluster-init-ramsize=294
       when: cluster_check.rc == 1
+    - name: Check if bucket exists
+      command: /opt/couchbase/bin/couchbase-cli bucket-list -c 127.0.0.1:8091 -u {{ admin_user }} -p {{ admin_password }}
+      register: bucket_list
+      changed_when: False
+    - name: Create bucket
+      command: /opt/couchbase/bin/couchbase-cli bucket-create -c 127.0.0.1:8091 -u {{ admin_user }} -p {{ admin_password }} --bucket=poleland --bucket-type=couchbase --bucket-port=11222 --bucket-ramsize=200 --bucket-replica=1 --wait
+      when: "bucket_list.stdout.find('poleland') == -1"
