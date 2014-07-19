@@ -15,4 +15,4 @@ curl -X POST -u poleland:poleland http://10.0.0.2:8091/pools/default/buckets \
 
 sleep 1 # Bucket create seems to need a little time after responding
 
-node /vagrant/api/src/add-test-data.js
+node /vagrant/api/add-test-data.js

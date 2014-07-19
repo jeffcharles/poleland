@@ -6,7 +6,7 @@ var jshint = require('gulp-jshint');
 var mocha = require('gulp-mocha');
 
 gulp.task('lint', function() {
-    return gulp.src(['./gulpfile.js',
+    return gulp.src(['./*.js',
                      './src/**/*.js',
                      './test/**/*.js'])
         .pipe(jshint())
