@@ -11,6 +11,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     couchbase.vm.network :forwarded_port, guest: 8091, host: 8091
 
+    couchbase.vm.network :private_network, ip: "10.0.0.2", :netmask => "255.255.0.0"
+
     couchbase.vm.provision "ansible" do |ansible|
       ansible.playbook = "provisioning/couchbase-playbook.yml"
       ansible.sudo = true
@@ -26,6 +28,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     web.vm.box_url = "https://vagrantcloud.com/ubuntu/trusty64/version/1/provider/virtualbox.box"
 
     web.vm.network :forwarded_port, guest:80, host:8080
+
+    web.vm.network :private_network, type: :dhcp, :netmask => "255.255.0.0"
 
     web.vm.provision "ansible" do |ansible|
       ansible.playbook = "provisioning/playbook.yml"
