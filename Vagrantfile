@@ -21,6 +21,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         admin_password: "poleland"
       }
     end
+
+    config.vm.provider "virtualbox" do |v|
+      v.memory = 1024
+    end
   end
 
   config.vm.define "web" do |web|
