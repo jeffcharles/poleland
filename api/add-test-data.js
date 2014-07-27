@@ -5,6 +5,7 @@ var couchbase = require('couchbase');
 var polls = {
     '1': {
         _type: 'poll',
+        _version: 1,
         title: 'Random stuff',
         questions: [
             {
@@ -47,6 +48,7 @@ var polls = {
     },
     '2': {
         _type: 'poll',
+        _version: 1,
         title: 'Awesomeness measurements',
         questions: [
             {

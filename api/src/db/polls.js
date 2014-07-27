@@ -1,110 +1,91 @@
-/* global exports */
+/* global exports, require */
 'use strict';
+var btoa = require('btoa');
+var couchbase = require('couchbase');
+var uuid = require('node-uuid');
+var cbConnection = require('./couchbase-connection');
 
-var polls = {
-    '1': {
-        title: 'Random stuff',
-        questions: [
-            {
-                id: '1',
-                content: 'What do you think of foo?',
-                answers: [
-                    {
-                        id: '1',
-                        content: 'I like it!'
-                    },
-                    {
-                        id: '2',
-                        content: 'I\'m indifferent'
-                    },
-                    {
-                        id: '3',
-                        content: 'I hate it!'
-                    }
-                ]
-            },
-            {
-                id: '2',
-                content: 'What is 2 + 3?',
-                answers: [
-                    {
-                        id: '1',
-                        content: '4'
-                    },
-                    {
-                        id: '2',
-                        content: '5'
-                    },
-                    {
-                        id: '3',
-                        content: '6'
-                    }
-                ]
-            }
-        ]
-    },
-    '2': {
-        title: 'Awesomeness measurements',
-        questions: [
-            {
-                id: '1',
-                content: 'Is this awesome?',
-                answers: [
-                    {
-                        id: '1',
-                        content: 'Yes'
-                    },
-                    {
-                        id: '2',
-                        content: 'No'
-                    }
-                ]
-            }
-        ]
-    }
-};
-
-function clone(x) {
-    return JSON.parse(JSON.stringify(x));
+function transformId(couchbaseId) {
+    return couchbaseId.replace('polls/', '');
 }
 
-function getPollWithId(id) {
-    var poll = polls[id];
-    if(!poll) {
-        return poll;
-    }
-    var clonedPoll = clone(poll);
-    clonedPoll._id = id;
-    return clonedPoll;
+function getPollWithId(id, callback) {
+    var db = cbConnection.get();
+    db.get('polls/' + id, null, function(err, result) {
+        if(err) {
+            if(err.code === couchbase.errors.keyNotFound) {
+                var newErr = new Error('Poll not found');
+                newErr.type = 'pollNotFound';
+                callback(newErr);
+            } else {
+                callback(err);
+            }
+            return;
+        }
+        result.value._id = id;
+        callback(null, result.value);
+    });
 }
 
 exports.getPolls = function(callback) {
-    var ids = Object.keys(polls);
-    callback(ids.map(getPollWithId));
+    var db = cbConnection.get();
+    var pollsQuery = db.view('polls', 'polls', null); // FIXME
+    pollsQuery.query(null, function(err, results) {
+        if(err) {
+            callback(err);
+        } else {
+            var pollKeys = results.map(function(t) { return t.key; });
+            db.getMulti(pollKeys, null, function(err, results) {
+                var polls = [];
+                var errors = [];
+                for(var id in results) {
+                    var value = results[id];
+                    if(value.error) {
+                        if(value.error !== couchbase.errors.keyNotFound) {
+                            errors.push(value.error);
+                        }
+                    } else if(value.value) {
+                        var poll = value.value;
+                        poll._id = transformId(id);
+                        polls.push(poll);
+                    } else {
+                        callback(new Error('Not sure how to handle this case'));
+                    }
+                }
+                if(errors) {
+                    callback(errors[0], polls);
+                } else {
+                    callback(null, polls);
+                }
+            });
+        }
+    });
 };
 
 exports.createPoll = function(poll, callback) {
-    var parseInt2 = function(s) {
-        return parseInt(s, 10);
-    };
-    var ids = Object.keys(polls).map(parseInt2);
-    ids.sort(function(x, y) { return x - y; });
-    var highestId = ids.pop();
-    var assignedId = (highestId + 1).toString();
-    polls[assignedId] = poll;
-    callback(getPollWithId(assignedId));
+    var id = btoa(uuid.v4());
+    poll._type = 'poll';
+    poll._version = 1;
+    var db = cbConnection.get();
+    db.add('polls/' + id, poll, function(err) {
+        if(err) {
+            callback(err);
+        } else {
+            getPollWithId(id, callback);
+        }
+    });
 };
 
 exports.getPoll = function(id, callback) {
-    callback(getPollWithId(id));
+    getPollWithId(id, callback);
 };
 
 exports.updatePoll = function(id, poll, callback) {
-    polls[id] = poll;
-    callback();
+    var db = cbConnection.get();
+    db.replace('polls/' + id, poll, callback);
 };
 
 exports.deletePoll = function(id, callback) {
-    delete polls[id];
-    callback();
+    var db = cbConnection.get();
+    db.remove('polls/' + id, null, callback);
 };

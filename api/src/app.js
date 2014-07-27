@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var errorHandler = require('errorhandler');
 var express = require('express');
 var logger = require('morgan');
+var cbConnection = require('./db/couchbase-connection');
 var routes = require('./routes');
 var polls = require('./routes/polls');
 var submissions = require('./routes/poll-submissions');
@@ -27,4 +28,17 @@ app.put('/api/v1/polls/:pollId', polls.put);
 app.del('/api/v1/polls/:pollId', polls.del);
 app.post('/api/v1/polls/:pollId/submissions', submissions.post);
 
-module.exports = app;
+var appStarted = false;
+module.exports.app = app;
+module.exports.start = function() {
+    if(!appStarted) {
+        appStarted = true;
+        cbConnection.init();
+    }
+};
+module.exports.stop = function() {
+    if(appStarted) {
+        cbConnection.shutdown();
+        appStarted = false;
+    }
+};

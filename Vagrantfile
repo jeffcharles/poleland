@@ -32,6 +32,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     web.vm.box_url = "https://vagrantcloud.com/ubuntu/trusty64/version/1/provider/virtualbox.box"
 
     web.vm.network :forwarded_port, guest:80, host:8080
+    web.vm.network :forwarded_port, guest: 3000, host: 3000
 
     web.vm.network :private_network, type: :dhcp, :netmask => "255.255.0.0"
 

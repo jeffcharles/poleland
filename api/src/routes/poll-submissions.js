@@ -4,11 +4,15 @@
 var polls = require('./../db/polls');
 var utilities = require('../utilities');
 
-exports.post = function(req, res) {
+exports.post = function(req, res, next) {
     var pollId = req.param('pollId');
-    polls.getPoll(pollId, function(poll) {
-        if(!poll) {
-            utilities.sendPollNotFoundError(req, res);
+    polls.getPoll(pollId, function(err) {
+        if(err) {
+            if(err.type !== 'pollNotFound') {
+                next(err);
+            } else {
+                utilities.sendPollNotFoundError(req, res);
+            }
         } else {
             res.send(200);
         }

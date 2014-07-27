@@ -1,9 +1,11 @@
-/* global describe, it, require */
+/* global after, before, describe, it, require */
 'use strict';
 
 var assert = require('assert');
 var request = require('supertest');
-var app = require('./../../../src/app');
+var appContainer = require('./../../../src/app');
+
+var app = appContainer.app;
 
 var poll = {
     title: 'Test',
@@ -27,6 +29,14 @@ var poll = {
     ]
 };
 
+before(function() {
+    appContainer.start();
+});
+
+after(function() {
+    appContainer.stop();
+});
+
 describe('POST /api/v1/polls', function() {
     it('creates a new poll', function(done) {
         request(app)
@@ -35,7 +45,7 @@ describe('POST /api/v1/polls', function() {
             .set('Content-Type', 'application/json')
             .send(poll)
             .expect('Content-Type', 'application/json')
-            .expect('Location', /^https?:\/\/.+\/api\/v1\/polls\/\d+$/)
+            .expect('Location', /^https?:\/\/.+\/api\/v1\/polls\/[A-Za-z0-9]+$/)
             .expect(201)
             .end(function(err, res) {
                 if(err) {

@@ -1,0 +1,7 @@
+{
+    "views": {
+        "polls": {
+            "map": "function (doc, meta) {\n  if(meta.id.indexOf('polls/') === 0) {\n    emit(meta.id, null);\n  }\n}"
+        }
+    }
+}

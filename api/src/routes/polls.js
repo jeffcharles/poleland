@@ -72,10 +72,14 @@ function sendPollNotValidError(req, res, error) {
     });
 }
 
-function resourceOperation(req, res, operation) {
-    db.getPoll(req.param('pollId'), function(poll) {
-        if(!poll) {
-            utilities.sendPollNotFoundError(req, res);
+function resourceOperation(req, res, next, operation) {
+    db.getPoll(req.param('pollId'), function(err, poll) {
+        if(err) {
+            if(err.type !== 'pollNotFound') {
+                next(err);
+            } else {
+                utilities.sendPollNotFoundError(req, res);
+            }
         } else {
             operation(poll);
         }
@@ -121,13 +125,19 @@ function preparePollForRes(req, poll) {
         }
     };
     delete poll._id;
+    delete poll._type;
+    delete poll._version;
     return poll;
 }
 
-exports.index = function(req, res) {
+exports.index = function(req, res, next) {
     res.format({
         'application/json': function() {
-            db.getPolls(function(polls) {
+            db.getPolls(function(err, polls) {
+                if(err) {
+                    next(err);
+                    return;
+                }
                 polls = polls.map(function(p) {
                     return preparePollForRes(req, p);
                 });
@@ -137,10 +147,10 @@ exports.index = function(req, res) {
     });
 };
 
-exports.get = function(req, res) {
+exports.get = function(req, res, next) {
     res.format({
         'application/json': function() {
-            resourceOperation(req, res, function(poll) {
+            resourceOperation(req, res, next, function(poll) {
                 preparePollForRes(req, poll);
                 res.send(poll);
             });
@@ -148,11 +158,15 @@ exports.get = function(req, res) {
     });
 };
 
-exports.post = function(req, res) {
+exports.post = function(req, res, next) {
     res.format({
         'application/json': function() {
             validatePoll(req, res, function(uploadedPoll) {
-                db.createPoll(uploadedPoll, function(poll) {
+                db.createPoll(uploadedPoll, function(err, poll) {
+                    if(err) {
+                        next(err);
+                        return;
+                    }
                     var selfUrl =
                             utilities.convertRelUrlToAbs(req,
                                                          '/api/v1/polls/' +
@@ -166,8 +180,8 @@ exports.post = function(req, res) {
     });
 };
 
-exports.put = function(req, res) {
-    resourceOperation(req, res, function() {
+exports.put = function(req, res, next) {
+    resourceOperation(req, res, next, function() {
         validatePoll(req, res, function(uploadedPoll) {
             db.updatePoll(req.param('pollId'), uploadedPoll, function() {
                 res.send(204);
@@ -176,8 +190,8 @@ exports.put = function(req, res) {
     });
 };
 
-exports.del = function(req, res) {
-    resourceOperation(req, res, function() {
+exports.del = function(req, res, next) {
+    resourceOperation(req, res, next, function() {
         db.deletePoll(req.param('pollId'), function() {
             res.send(204);
         });
