@@ -173,7 +173,7 @@ exports.post = function(req, res, next) {
                                                          poll._id);
                     preparePollForRes(req, poll);
                     res.setHeader('Location', selfUrl);
-                    res.send(201, poll);
+                    res.status(201).send(poll);
                 });
             });
         }
@@ -184,7 +184,7 @@ exports.put = function(req, res, next) {
     resourceOperation(req, res, next, function() {
         validatePoll(req, res, function(uploadedPoll) {
             db.updatePoll(req.param('pollId'), uploadedPoll, function() {
-                res.send(204);
+                res.status(204).end();
             });
         });
     });
@@ -193,7 +193,7 @@ exports.put = function(req, res, next) {
 exports.del = function(req, res, next) {
     resourceOperation(req, res, next, function() {
         db.deletePoll(req.param('pollId'), function() {
-            res.send(204);
+            res.status(204).end();
         });
     });
 };

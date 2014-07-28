@@ -25,7 +25,7 @@ app.get('/api/v1/polls', polls.index);
 app.post('/api/v1/polls', polls.post);
 app.get('/api/v1/polls/:pollId', polls.get);
 app.put('/api/v1/polls/:pollId', polls.put);
-app.del('/api/v1/polls/:pollId', polls.del);
+app.delete('/api/v1/polls/:pollId', polls.del);
 app.post('/api/v1/polls/:pollId/submissions', submissions.post);
 
 var appStarted = false;

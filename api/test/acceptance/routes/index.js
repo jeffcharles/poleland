@@ -19,7 +19,7 @@ describe('GET /api/v1', function() {
         request(app)
             .get('/api/v1')
             .set('Accept', 'application/json')
-            .expect('Content-Type', 'application/json')
+            .expect('Content-Type', 'application/json; charset=utf-8')
             .expect(200)
             .end(function(err, res) {
                 if(err) {

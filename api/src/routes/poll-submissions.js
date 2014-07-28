@@ -14,7 +14,7 @@ exports.post = function(req, res, next) {
                 utilities.sendPollNotFoundError(req, res);
             }
         } else {
-            res.send(200);
+            res.status(200).end();
         }
     });
 };
