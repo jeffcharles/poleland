@@ -16,7 +16,8 @@
     "express": "~4.7.2",
     "morgan": "~1.2.2",
     "node-uuid": "^1.4.1",
-    "tv4": "~1.1.0"
+    "tv4": "~1.1.0",
+    "verror": "^1.4.0"
   },
   "devDependencies": {
     "supertest": "~0.13.0",

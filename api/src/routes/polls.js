@@ -75,10 +75,10 @@ function sendPollNotValidError(req, res, error) {
 function resourceOperation(req, res, next, operation) {
     db.getPoll(req.param('pollId'), function(err, poll) {
         if(err) {
-            if(err.type !== 'pollNotFound') {
-                next(err);
-            } else {
+            if(err.name === 'pollNotFound') {
                 utilities.sendPollNotFoundError(req, res);
+            } else {
+                next(err);
             }
         } else {
             operation(poll);

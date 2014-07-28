@@ -3,6 +3,7 @@
 var btoa = require('btoa');
 var couchbase = require('couchbase');
 var uuid = require('node-uuid');
+var VError = require('verror');
 var cbConnection = require('./couchbase-connection');
 
 function transformId(couchbaseId) {
@@ -14,8 +15,8 @@ function getPollWithId(id, callback) {
     db.get('polls/' + id, null, function(err, result) {
         if(err) {
             if(err.code === couchbase.errors.keyNotFound) {
-                var newErr = new Error('Poll not found');
-                newErr.type = 'pollNotFound';
+                var newErr = new VError(err, 'Poll not found');
+                newErr.name = 'pollNotFound';
                 callback(newErr);
             } else {
                 callback(err);
