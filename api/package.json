@@ -4,6 +4,7 @@
   "description": "A site for managing polls",
   "main": "src/app.js",
   "scripts": {
+    "start": "node src/run-app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jeffrey Charles <jeffreycharles@gmail.com>",
