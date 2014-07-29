@@ -1,9 +1,6 @@
 #!/bin/bash
 
-set -euo pipefail # Unofficial bash strict mode
-
-curl -X DELETE -u poleland:poleland \
-    http://10.0.0.2:8091/pools/default/buckets/poleland
+set -euo pipefail
 
 curl -X POST -u poleland:poleland http://10.0.0.2:8091/pools/default/buckets \
     -d authType=none \
@@ -15,6 +12,6 @@ curl -X POST -u poleland:poleland http://10.0.0.2:8091/pools/default/buckets \
 
 sleep 1 # Bucket create seems to need a little time after responding
 
-/vagrant/api/add-design-docs.sh
-
-node /vagrant/api/add-test-data.js
+curl -X PUT -H 'Content-Type: application/json' \
+    http://10.0.0.2:8092/poleland/_design/polls \
+    -d @/vagrant/api/couchbase-scripts/design_docs/polls.json
