@@ -19,5 +19,5 @@
       failed_when: "cluster_check.rc not in (0, 1)"
       changed_when: False
     - name: Configure cluster
-      command: /opt/couchbase/bin/couchbase-cli cluster-init -c 127.0.0.1:8091 --cluster-init-username={{ admin_user }} --cluster-init-password={{ admin_password }} --cluster-init-port=8091 --cluster-init-ramsize=294
+      command: /opt/couchbase/bin/couchbase-cli cluster-init -c 127.0.0.1:8091 --cluster-init-username={{ admin_user }} --cluster-init-password={{ admin_password }} --cluster-init-port=8091 --cluster-init-ramsize=400
       when: cluster_check.rc == 1

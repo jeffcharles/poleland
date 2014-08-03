@@ -69,8 +69,12 @@ var polls = {
     }
 };
 
+var bucket = 'poleland';
+if(process.argv.length === 3) {
+    bucket = process.argv[2];
+}
 var db =
-        new couchbase.Connection({host: '10.0.0.2:8091', bucket: 'poleland'});
+        new couchbase.Connection({host: '10.0.0.2:8091', bucket: bucket});
 
 var pollsForCb = {};
 for(var pollId in polls) {
