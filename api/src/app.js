@@ -33,7 +33,7 @@ module.exports.app = app;
 module.exports.start = function(bucketName) {
     if(!appStarted) {
         appStarted = true;
-        cbConnection.init(bucketName);
+        cbConnection.init(bucketName || 'poleland');
     }
 };
 module.exports.stop = function() {
