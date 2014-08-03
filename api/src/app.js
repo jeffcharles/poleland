@@ -30,10 +30,10 @@ app.post('/api/v1/polls/:pollId/submissions', submissions.post);
 
 var appStarted = false;
 module.exports.app = app;
-module.exports.start = function() {
+module.exports.start = function(bucketName) {
     if(!appStarted) {
         appStarted = true;
-        cbConnection.init();
+        cbConnection.init(bucketName);
     }
 };
 module.exports.stop = function() {

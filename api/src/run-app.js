@@ -3,7 +3,7 @@
 
 var appContainer = require('./app');
 
-appContainer.start();
+appContainer.start('poleland');
 process.on('exit', appContainer.stop);
 var app = appContainer.app;
 app.listen(app.get('port'));
