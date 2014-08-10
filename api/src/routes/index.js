@@ -3,6 +3,10 @@
 
 var utilities = require('../utilities');
 
+/**
+ * @param {!Request} req
+ * @param {!Response} res
+ */
 exports.index = function(req, res) {
     res.format({
         'application/json': function() {

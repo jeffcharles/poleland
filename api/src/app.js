@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var errorHandler = require('errorhandler');
 var express = require('express');
 var logger = require('morgan');
+var Q = require('Q');
 var cbConnection = require('./db/couchbase-connection');
 var routes = require('./routes');
 var polls = require('./routes/polls');
@@ -17,6 +18,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 
 if(app.get('env') == 'development') {
+    Q.longStackSupport = true;
     app.use(errorHandler());
 }
 

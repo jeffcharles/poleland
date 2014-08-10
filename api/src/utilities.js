@@ -1,10 +1,18 @@
 /* global exports */
 'use strict';
 
+/**
+ * @param {!Request} req
+ * @param {!string} relativeUrl
+ */
 exports.convertRelUrlToAbs = function(req, relativeUrl) {
     return req.protocol + '://' + req.headers.host + relativeUrl;
 };
 
+/**
+ * @param {!Request} req
+ * @param {!Response} res
+ */
 exports.sendPollNotFoundError = function(req, res) {
     res.format({
         'application/json': function() {

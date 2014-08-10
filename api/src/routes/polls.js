@@ -56,6 +56,11 @@ var pollSchema = {
     required: ['title', 'questions']
 };
 
+/**
+ * @param {!Request} req
+ * @param {!Response} res
+ * @param {!object} error
+ */
 function sendPollNotValidError(req, res, error) {
     res.format({
         'application/json': function() {
@@ -72,20 +77,30 @@ function sendPollNotValidError(req, res, error) {
     });
 }
 
+/**
+ * @param {!Request} req
+ * @param {!Response} res
+ * @param {!Function} next
+ * @param {!Function} operation
+ */
 function resourceOperation(req, res, next, operation) {
-    db.getPoll(req.param('pollId'), function(err, poll) {
-        if(err) {
+    db.getPoll(req.param('pollId'))
+        .then(function(poll) {
+            operation(poll);
+        }).fail(function(err) {
             if(err.name === 'pollNotFound') {
                 utilities.sendPollNotFoundError(req, res);
             } else {
                 next(err);
             }
-        } else {
-            operation(poll);
-        }
-    });
+        })
+        .done();
 }
 
+/**
+ * @param {!UserEnteredPoll} poll
+ * @returns {!RawPoll}
+ */
 function stripUnknownPollProperties(poll) {
     return {
         title: poll.title,
@@ -104,6 +119,11 @@ function stripUnknownPollProperties(poll) {
     };
 }
 
+/**
+ * @param {!Request} req
+ * @param {!Response} res
+ * @param {!Function} operation
+ */
 function validatePoll(req, res, operation) {
     var uploadedPoll = req.body;
     var valid = tv4.validate(uploadedPoll, pollSchema);
@@ -114,6 +134,11 @@ function validatePoll(req, res, operation) {
     }
 }
 
+/**
+ * @param {!Request} req
+ * @param {!PollDoc} poll
+ * @returns {!OutPoll}
+ */
 function preparePollForRes(req, poll) {
     poll._links = {
         'self': {
@@ -130,23 +155,33 @@ function preparePollForRes(req, poll) {
     return poll;
 }
 
+/**
+ * @param {!Request} req
+ * @param {!Response} res
+ * @param {!Function} next
+ */
 exports.index = function(req, res, next) {
     res.format({
         'application/json': function() {
-            db.getPolls(function(err, polls) {
-                if(err) {
+            db.getPolls()
+                .then(function(polls) {
+                    polls = polls.map(function(p) {
+                        return preparePollForRes(req, p);
+                    });
+                    res.send(polls);
+                }).fail(function(err) {
                     next(err);
-                    return;
-                }
-                polls = polls.map(function(p) {
-                    return preparePollForRes(req, p);
-                });
-                res.send(polls);
-            });
+                })
+                .done();
         }
     });
 };
 
+/**
+ * @param {!Request} req
+ * @param {!Response} res
+ * @param {!Function} next
+ */
 exports.get = function(req, res, next) {
     res.format({
         'application/json': function() {
@@ -158,42 +193,65 @@ exports.get = function(req, res, next) {
     });
 };
 
+/**
+ * @param {!Request} req
+ * @param {!Response} res
+ * @param {!Function} next
+ */
 exports.post = function(req, res, next) {
     res.format({
         'application/json': function() {
             validatePoll(req, res, function(uploadedPoll) {
-                db.createPoll(uploadedPoll, function(err, poll) {
-                    if(err) {
-                        next(err);
-                        return;
-                    }
-                    var selfUrl =
+                db.createPoll(uploadedPoll)
+                    .then(function(poll) {
+                        var selfUrl =
                             utilities.convertRelUrlToAbs(req,
                                                          '/api/v1/polls/' +
                                                          poll._id);
-                    preparePollForRes(req, poll);
-                    res.setHeader('Location', selfUrl);
-                    res.status(201).send(poll);
-                });
+                        preparePollForRes(req, poll);
+                        res.setHeader('Location', selfUrl);
+                        res.status(201).send(poll);
+                    }).fail(function(err) {
+                        next(err);
+                    })
+                    .done();
             });
         }
     });
 };
 
+/**
+ * @param {!Request} req
+ * @param {!Response} res
+ * @param {!Function} next
+ */
 exports.put = function(req, res, next) {
     resourceOperation(req, res, next, function() {
         validatePoll(req, res, function(uploadedPoll) {
-            db.updatePoll(req.param('pollId'), uploadedPoll, function() {
-                res.status(204).end();
-            });
+            db.updatePoll(req.param('pollId'), uploadedPoll)
+                .then(function() {
+                    res.status(204).end();
+                }).fail(function(err) {
+                    next(err);
+                })
+                .done();
         });
     });
 };
 
+/**
+ * @param {!Request} req
+ * @param {!Response} res
+ * @param {!Function} next
+ */
 exports.del = function(req, res, next) {
     resourceOperation(req, res, next, function() {
-        db.deletePoll(req.param('pollId'), function() {
-            res.status(204).end();
-        });
+        db.deletePoll(req.param('pollId'))
+            .then(function() {
+                res.status(204).end();
+            }).fail(function(err) {
+                next(err);
+            })
+            .done();
     });
 };

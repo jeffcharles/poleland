@@ -2,91 +2,115 @@
 'use strict';
 var btoa = require('btoa');
 var couchbase = require('couchbase');
+var Q = require('q');
 var uuid = require('node-uuid');
 var VError = require('verror');
 var cbConnection = require('./couchbase-connection');
 
+/**
+ * @param {!string} couchbaseId
+ * @returns {!string}
+ */
 function transformId(couchbaseId) {
     return couchbaseId.replace('polls/', '');
 }
 
-function getPollWithId(id, callback) {
+/**
+ * @param {!string} id
+ * @returns {!Promise.<PollDoc|PollNotFoundError|Error>}
+ */
+function getPollWithId(id) {
     var db = cbConnection.get();
-    db.get('polls/' + id, null, function(err, result) {
-        if(err) {
+    return Q.ninvoke(db, 'get', 'polls/' + id, null)
+        .then(function(result) {
+            result.value._id = id;
+            return result.value;
+        }, function(err) {
             if(err.code === couchbase.errors.keyNotFound) {
                 var newErr = new VError(err, 'Poll not found');
                 newErr.name = 'pollNotFound';
-                callback(newErr);
-            } else {
-                callback(err);
+                throw newErr;
             }
-            return;
-        }
-        result.value._id = id;
-        callback(null, result.value);
-    });
+            throw err;
+        });
 }
 
-exports.getPolls = function(callback) {
+/**
+ * @returns {!Promise.<PollDoc[]|Error>}
+ */
+exports.getPolls = function() {
     var db = cbConnection.get();
     var pollsQuery = db.view('polls', 'polls', null); // FIXME
-    pollsQuery.query(null, function(err, results) {
-        if(err) {
-            callback(err);
-        } else {
-            var pollKeys = results.map(function(t) { return t.key; });
-            db.getMulti(pollKeys, null, function(err, results) {
-                var polls = [];
-                var errors = [];
-                for(var id in results) {
-                    var value = results[id];
-                    if(value.error) {
-                        if(value.error !== couchbase.errors.keyNotFound) {
-                            errors.push(value.error);
-                        }
-                    } else if(value.value) {
-                        var poll = value.value;
-                        poll._id = transformId(id);
-                        polls.push(poll);
-                    } else {
-                        callback(new Error('Not sure how to handle this case'));
-                    }
-                }
-                if(errors) {
-                    callback(errors[0], polls);
-                } else {
-                    callback(null, polls);
-                }
+    return Q.ninvoke(pollsQuery, 'query', null)
+        .then(function(results) {
+            var pollKeys = results[0].map(function(t) { return t.key; });
+            return Q.Promise(function(resolve, reject) {
+                db.getMulti(pollKeys, null, function(err, results) {
+                    var polls = [];
+                    var errors = [];
+                    for(var id in results) {
+                       var value = results[id];
+                       if(value.error) {
+                           if(value.error !== couchbase.errors.keyNotFound) {
+                               errors.push(value.error);
+                           }
+                       } else if(value.value) {
+                           var poll = value.value;
+                           poll._id = transformId(id);
+                           polls.push(poll);
+                       } else {
+                           reject(
+                               new Error('Not sure how to handle this case'));
+                       }
+                   }
+                   if(errors.length > 0) {
+                       reject(errors[0]);
+                   } else {
+                       resolve(polls);
+                   }
+                });
             });
-        }
-    });
+        });
 };
 
-exports.createPoll = function(poll, callback) {
+/**
+ * @param {!RawPoll} poll
+ * @returns {!Promise.<CbPoll|Error>}
+ */
+exports.createPoll = function(poll) {
     var id = btoa(uuid.v4());
     poll._type = 'poll';
     poll._version = 1;
     var db = cbConnection.get();
-    db.add('polls/' + id, poll, function(err) {
-        if(err) {
-            callback(err);
-        } else {
-            getPollWithId(id, callback);
-        }
-    });
+    return Q.ninvoke(db, 'add', 'polls/' + id, poll)
+        .then(function() {
+            return getPollWithId(id);
+        });
 };
 
-exports.getPoll = function(id, callback) {
-    getPollWithId(id, callback);
+/**
+ * @param {!string} id
+ * @returns {!Promise.<CbPoll|PollNotFoundError|Error>}
+ */
+exports.getPoll = function(id) {
+    return getPollWithId(id);
 };
 
-exports.updatePoll = function(id, poll, callback) {
+/**
+ * @param {!string} id
+ * @param {!RawPoll} poll
+ * @returns {!Promise.<undefined|Error>}
+ */
+exports.updatePoll = function(id, poll) {
     var db = cbConnection.get();
-    db.replace('polls/' + id, poll, callback);
+    return Q.ninvoke(db, 'replace', 'polls/' + id, poll);
 };
 
-exports.deletePoll = function(id, callback) {
+/**
+ * @param {!string} id
+ * @returns {!Promise.<undefined|Error>}
+ */
+exports.deletePoll = function(id) {
     var db = cbConnection.get();
-    db.remove('polls/' + id, null, callback);
+    return Q.ninvoke(db, 'remove', 'polls/' + id, null);
 };
