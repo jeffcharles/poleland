@@ -58,22 +58,21 @@
     - name: Install docker-py
       pip: name=docker-py version=0.3.1
 
-    - name: Build API docker image
-      docker_image: path=/vagrant/api name=poleland-api state=present
+    - name: Build docker images
+      docker_image: path={{ item.path }} name={{ item.name }} state=present
+      with_items:
+        - { path: /vagrant/api, name: poleland-api }
+        - { path: /vagrant/ui, name: poleland-ui }
+        - { path: /vagrant/routing, name: poleland-routing }
 
-    - name: Run API docker container
-      docker: image=poleland-api name=poleland-api-container
-                volumes=/vagrant/api:/usr/src/node state=running
-
-    - name: Build UI docker image
-      docker_image: path=/vagrant/ui name=poleland-ui state=present
-
-    - name: Run UI docker container
-      docker: image=poleland-ui name=poleland-ui-container
-                volumes=/vagrant/ui:/vagrant/ui state=running
-
-    - name: Build routing docker image
-      docker_image: path=/vagrant/routing name=poleland-routing state=present
+    - name: Run docker images
+      docker: image={{ item.image }} name={{ item.name }}
+                volumes={{ item.volumes }} state=running
+      with_items:
+        - { image: poleland-api, name: poleland-api-container,
+            volumes: '/vagrant/api:/usr/src/node' }
+        - { image: poleland-ui, name: poleland-ui-container,
+            volumes: '/vagrant/ui:/vagrant/ui' }
 
     - name: Run routing docker image
       docker: image=poleland-routing name=poleland-routing-container ports=80:80
