@@ -2,18 +2,18 @@
 - hosts: all
   tasks:
 
-    - name: Update package cache
-      apt: update_cache=yes
+    - name: Install UI apt packages
+      apt: pkg=git-core update_cache=yes
 
     - name: Install Node.js
       shell: wget http://nodejs.org/dist/v0.10.28/node-v0.10.28-linux-x64.tar.gz -O - | tar -C /usr/local --strip-components 1 -xzf -
                creates=/usr/local/bin/node
 
-    - name: Install git
-      apt: pkg=git-core
-
     - name: Install bower
       npm: name=bower global=yes version=1.3.2
+
+    - name: Install gulp
+      npm: name=gulp global=yes version=3.6.0
 
     - name: Install NPM dependencies for UI
       npm: path=/vagrant/ui
@@ -22,9 +22,6 @@
       command: /usr/local/bin/bower install --allow-root chdir=/vagrant/ui
       register: bower
       changed_when: bower.stdout != ''
-
-    - name: Install gulp
-      npm: name=gulp global=yes version=3.6.0
 
     - name: Add Couchbase apt repo
       get_url: url=http://packages.couchbase.com/ubuntu/couchbase-ubuntu1404.list
@@ -43,7 +40,7 @@
     - name: Install NPM dependencies for API
       npm: path=/vagrant/api
 
-    - name: Install apt-transport-https
+    - name: Install apt-transport-https for Docker
       apt: pkg=apt-transport-https
 
     - name: Add key for Docker apt repo
@@ -52,11 +49,11 @@
     - name: Add Docker repo to apt sources list
       apt_repository: repo='deb https://get.docker.io/ubuntu docker main' state=present
 
-    - name: Install docker
-      apt: pkg=lxc-docker-1.1.0
-
-    - name: Install pip
-      apt: pkg=python-pip
+    - name: Install apt packages for Docker
+      apt: pkg={{ item }} update_cache=yes
+      with_items:
+        - lxc-docker-1.1.0
+        - python-pip
 
     - name: Install docker-py
       pip: name=docker-py version=0.3.1
