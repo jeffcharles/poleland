@@ -1,58 +1,81 @@
 ---
 - hosts: all
   tasks:
+
     - name: Update package cache
       apt: update_cache=yes
+
     - name: Install Node.js
       shell: wget http://nodejs.org/dist/v0.10.28/node-v0.10.28-linux-x64.tar.gz -O - | tar -C /usr/local --strip-components 1 -xzf -
                creates=/usr/local/bin/node
+
     - name: Install git
       apt: pkg=git-core
+
     - name: Install bower
       npm: name=bower global=yes version=1.3.2
+
     - name: Install NPM dependencies for UI
       npm: path=/vagrant/ui
+
     - name: Install Bower dependencies
       command: /usr/local/bin/bower install --allow-root chdir=/vagrant/ui
+
     - name: Install gulp
       npm: name=gulp global=yes version=3.6.0
+
     - name: Add Couchbase apt repo
       get_url: url=http://packages.couchbase.com/ubuntu/couchbase-ubuntu1404.list
                  dest=/etc/apt/sources.list.d/couchbase.list
+
     - name: Add Couchbase GPG key
       apt_key: url=http://packages.couchbase.com/ubuntu/couchbase.key
                  state=present
+
     - name: Install libriaries required for Couchbase SDK
       apt: pkg={{ item }} update_cache=yes
       with_items:
         - libcouchbase2-libevent
         - libcouchbase-dev
+
     - name: Install NPM dependencies for API
       npm: path=/vagrant/api
+
     - name: Install apt-transport-https
       apt: pkg=apt-transport-https
+
     - name: Add key for Docker apt repo
       apt_key: keyserver=hkp://keyserver.ubuntu.com:80 id=A88D21E9 state=present
+
     - name: Add Docker repo to apt sources list
       apt_repository: repo='deb https://get.docker.io/ubuntu docker main' state=present
+
     - name: Install docker
       apt: pkg=lxc-docker=1.1.0
+
     - name: Install pip
       apt: pkg=python-pip
+
     - name: Install docker-py
       pip: name=docker-py version=0.3.1
+
     - name: Build API docker image
       docker_image: path=/vagrant/api name=poleland-api state=present
+
     - name: Run API docker container
       docker: image=poleland-api name=poleland-api-container
                 volumes=/vagrant/api:/usr/src/node state=running
+
     - name: Build UI docker image
       docker_image: path=/vagrant/ui name=poleland-ui state=present
+
     - name: Run UI docker container
       docker: image=poleland-ui name=poleland-ui-container
                 volumes=/vagrant/ui:/vagrant/ui state=running
+
     - name: Build routing docker image
       docker_image: path=/vagrant/routing name=poleland-routing state=present
+
     - name: Run routing docker image
       docker: image=poleland-routing name=poleland-routing-container ports=80:80
                 links=poleland-api-container:api,poleland-ui-container:ui
