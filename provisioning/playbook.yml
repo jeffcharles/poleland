@@ -20,6 +20,8 @@
 
     - name: Install Bower dependencies
       command: /usr/local/bin/bower install --allow-root chdir=/vagrant/ui
+      register: bower
+      changed_when: bower.stdout != ''
 
     - name: Install gulp
       npm: name=gulp global=yes version=3.6.0
