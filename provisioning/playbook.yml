@@ -9,11 +9,11 @@
       shell: wget http://nodejs.org/dist/v0.10.28/node-v0.10.28-linux-x64.tar.gz -O - | tar -C /usr/local --strip-components 1 -xzf -
                creates=/usr/local/bin/node
 
-    - name: Install bower
-      npm: name=bower global=yes version=1.3.2
-
-    - name: Install gulp
-      npm: name=gulp global=yes version=3.6.0
+    - name: Install global Node packages
+      npm: name={{ item.n }} global=yes version={{ item.v }}
+      with_items:
+        - { n: bower, v: 1.3.2 }
+        - { n: gulp, v: 3.6.0 }
 
     - name: Install NPM dependencies for UI
       npm: path=/vagrant/ui
