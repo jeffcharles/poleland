@@ -80,9 +80,15 @@ var pollsForCb = {};
 for(var pollId in polls) {
     pollsForCb['polls/' + pollId] = { value: polls[pollId] };
 }
-db.addMulti(pollsForCb, null, function(err) {
-    if(err) {
-        console.log(err);
+db.addMulti(pollsForCb, null, function(err, results) {
+    var hasProblematicError = false;
+    for(var id in results) {
+        var result = results[id];
+        if(result.error
+           && result.error.code !== couchbase.errors.keyAlreadyExists) {
+            console.log(result.error);
+            hasProblematicError = true;
+        }
     }
-    process.exit(err ? 1 : 0);
+    process.exit(hasProblematicError ? 1 : 0);
 });
