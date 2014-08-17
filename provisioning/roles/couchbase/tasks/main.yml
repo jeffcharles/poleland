@@ -1,0 +1,26 @@
+---
+
+- name: Check if Couchbase is installed
+  command: /usr/bin/dpkg-query -l couchbase-server
+  register: couchbase_check
+  failed_when: "couchbase_check.rc not in (0, 1)"
+  changed_when: False
+
+- name: Download Couchbase deb
+  get_url: url=http://packages.couchbase.com/releases/2.2.0/couchbase-server-community_2.2.0_x86_64.deb
+             dest=~/.
+  when: couchbase_check.rc == 1
+
+- name: Install Couchbase deb
+  command: /usr/bin/dpkg -i ~/couchbase-server-community_2.2.0_x86_64.deb
+  when: couchbase_check.rc == 1
+
+- name: Check cluster
+  command: /opt/couchbase/bin/couchbase-cli server-list -c 127.0.0.1:8091 -u {{ admin_user }} -p {{ admin_password }}
+  register: cluster_check
+  failed_when: "cluster_check.rc not in (0, 1)"
+  changed_when: False
+
+- name: Configure cluster
+  command: /opt/couchbase/bin/couchbase-cli cluster-init -c 127.0.0.1:8091 --cluster-init-username={{ admin_user }} --cluster-init-password={{ admin_password }} --cluster-init-port=8091 --cluster-init-ramsize=400
+  when: cluster_check.rc == 1

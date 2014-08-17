@@ -13,18 +13,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     couchbase.vm.network :private_network, ip: "10.0.0.2", :netmask => "255.255.0.0"
 
-    couchbase.vm.provision "ansible" do |ansible|
-      ansible.playbook = "provisioning/couchbase-playbook.yml"
-      ansible.sudo = true
-      ansible.extra_vars = {
-        admin_user: "poleland",
-        admin_password: "poleland"
-      }
-    end
-
     config.vm.provider "virtualbox" do |v|
       v.memory = 1024
     end
+
+    # provisioning is done in the web ansible provisioning step
   end
 
   config.vm.define "web" do |web|
@@ -37,8 +30,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     web.vm.network :private_network, type: :dhcp, :netmask => "255.255.0.0"
 
     web.vm.provision "ansible" do |ansible|
-      ansible.playbook = "provisioning/playbook.yml"
+      # This provisions both virtual machines
+      ansible.playbook = "provisioning/site.yml"
+      ansible.limit = 'all'
       ansible.sudo = true
+      ansible.extra_vars = {
+        admin_user: "poleland",
+        admin_password: "poleland"
+      }
     end
   end
 

@@ -1,0 +1,26 @@
+---
+- include: couchbase.yml
+- include: web.yml
+
+- hosts: web
+  tasks:
+
+    - name: Create Couchbase bucket
+      command: /vagrant/api/couchbase-scripts/create-db.sh
+
+    - name: Add test data to Couchbase
+      command: /usr/local/bin/node /vagrant/api/couchbase-scripts/add-test-data.js
+
+    - name: Run docker images
+      docker: image={{ item.image }} name={{ item.name }}
+                volumes={{ item.volumes }} state=running
+      with_items:
+        - { image: poleland-api, name: poleland-api-container,
+            volumes: '/vagrant/api:/usr/src/node' }
+        - { image: poleland-ui, name: poleland-ui-container,
+            volumes: '/vagrant/ui:/vagrant/ui' }
+
+    - name: Run routing docker image
+      docker: image=poleland-routing name=poleland-routing-container ports=80:80
+                links=poleland-api-container:api,poleland-ui-container:ui
+                volumes=/vagrant/routing:/vagrant/routing state=running
