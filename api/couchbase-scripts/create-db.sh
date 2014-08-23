@@ -12,16 +12,21 @@ elif [ $# -ne 0 ]; then
     exit 1
 fi
 
-curl -X POST -u poleland:poleland http://10.0.0.2:8091/pools/default/buckets \
-    -d authType=none \
-    -d bucketType=couchbase \
-    -d name=$bucket \
-    -d proxyPort=$port \
-    -d ramQuotaMB=200 \
-    -d replicaNumber=0
+existsStatusCode=$(curl -s -o /dev/null -w "%{http_code}" http://10.0.0.2:8091/pools/default/buckets/$bucket)
+if [ $existsStatusCode -gt 299 ]; then
+    echo 'Creating bucket'
+    curl -X POST -u poleland:poleland \
+        http://10.0.0.2:8091/pools/default/buckets \
+        -d authType=none \
+        -d bucketType=couchbase \
+        -d name=$bucket \
+        -d proxyPort=$port \
+        -d ramQuotaMB=200 \
+        -d replicaNumber=0
 
-sleep 1 # Bucket create seems to need a little time after responding
+    sleep 1 # Bucket create seems to need a little time after responding
 
-curl -X PUT -H 'Content-Type: application/json' \
-    http://10.0.0.2:8092/$bucket/_design/polls \
-    -d @/vagrant/api/couchbase-scripts/design_docs/polls.json
+    curl -X PUT -H 'Content-Type: application/json' \
+        http://10.0.0.2:8092/$bucket/_design/polls \
+        -d @/vagrant/api/couchbase-scripts/design_docs/polls.json
+fi

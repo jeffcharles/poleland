@@ -7,6 +7,8 @@
 
     - name: Create Couchbase bucket
       command: /vagrant/api/couchbase-scripts/create-db.sh
+      register: bucket
+      changed_when: bucket.stdout != ''
 
     - name: Add test data to Couchbase
       command: /usr/local/bin/node /vagrant/api/couchbase-scripts/add-test-data.js
