@@ -88,6 +88,8 @@ db.addMulti(pollsForCb, null, function(err, results) {
            && result.error.code !== couchbase.errors.keyAlreadyExists) {
             console.log(result.error);
             hasProblematicError = true;
+        } else if(!result.error) {
+            console.log('Created document for ' + id);
         }
     }
     process.exit(hasProblematicError ? 1 : 0);

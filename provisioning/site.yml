@@ -10,6 +10,8 @@
 
     - name: Add test data to Couchbase
       command: /usr/local/bin/node /vagrant/api/couchbase-scripts/add-test-data.js
+      register: data
+      changed_when: data.stdout != ''
 
     - name: Run docker images
       docker: image={{ item.image }} name={{ item.name }}
