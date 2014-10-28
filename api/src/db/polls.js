@@ -1,75 +1,58 @@
 /* global exports, require */
 'use strict';
 var btoa = require('btoa');
-var couchbase = require('couchbase');
 var Q = require('q');
 var uuid = require('node-uuid');
-var VError = require('verror');
-var cbConnection = require('./couchbase-connection');
-
-/**
- * @param {!string} couchbaseId
- * @returns {!string}
- */
-function transformId(couchbaseId) {
-    return couchbaseId.replace('polls/', '');
-}
+var dynamoInfo = require('./dynamodb-connection');
+var dynamoConnection = dynamoInfo.connection;
+var tableName = dynamoInfo.prefix + '_polls';
 
 /**
  * @param {!string} id
  * @returns {!Promise.<PollDoc|PollNotFoundError|Error>}
  */
 function getPollWithId(id) {
-    var db = cbConnection.get();
-    return Q.ninvoke(db, 'get', 'polls/' + id, null)
-        .then(function(result) {
-            result.value._id = id;
-            return result.value;
-        }, function(err) {
-            if(err.code === couchbase.errors.keyNotFound) {
-                var newErr = new VError(err, 'Poll not found');
-                newErr.name = 'pollNotFound';
-                throw newErr;
-            }
-            throw err;
-        });
+    return Q.ninvoke(dynamoConnection, 'getItem', {
+        TableName: tableName,
+        Key: { _id: id },
+        ConsistentRead: true
+    }).then(function(result) {
+        if(!Object.keys(result).length) {
+            var newErr = new Error('Poll not found');
+            newErr.name = 'pollNotFound';
+            throw newErr;
+        }
+        var poll = result.Item.poll;
+        poll._id = id;
+        return poll;
+    });
 }
 
 /**
- * @returns {!Promise.<PollDoc[]|Error>}
+ * @param {string} continueAfter
+ * @param {number} limit
+ * @returns {!Promise.<QueryResults<PollDoc[]>|Error>}
  */
-exports.getPolls = function() {
-    var db = cbConnection.get();
-    var pollsQuery = db.view('polls', 'polls', null); // FIXME
-    return Q.ninvoke(pollsQuery, 'query', null)
+exports.getPolls = function(continueAfter, limit) {
+    var params = {
+        TableName: tableName,
+        Limit: limit || 100
+    };
+    if(continueAfter) {
+        params.ExclusiveStartKey = { _id: continueAfter };
+    }
+    return Q.ninvoke(dynamoConnection, 'scan', params)
         .then(function(results) {
-            var pollKeys = results[0].map(function(t) { return t.key; });
-            return Q.Promise(function(resolve, reject) {
-                db.getMulti(pollKeys, null, function(err, results) {
-                    var polls = [];
-                    var errors = [];
-                    for(var id in results) {
-                       var value = results[id];
-                       if(value.error) {
-                           if(value.error !== couchbase.errors.keyNotFound) {
-                               errors.push(value.error);
-                           }
-                       } else if(value.value) {
-                           var poll = value.value;
-                           poll._id = transformId(id);
-                           polls.push(poll);
-                       } else {
-                           reject(
-                               new Error('Not sure how to handle this case'));
-                       }
-                   }
-                   if(errors.length > 0) {
-                       reject(errors[0]);
-                   } else {
-                       resolve(polls);
-                   }
-                });
-            });
+            var inlineId = function(item) {
+                var poll = item.poll;
+                poll._id = item._id;
+                return poll;
+            };
+            var data = { items: results.Items.map(inlineId) };
+            if(results.LastEvaluatedKey) {
+                data.continueAfter = results.LastEvaluatedKey._id;
+            }
+            return data;
         });
 };
 
@@ -79,13 +62,16 @@ exports.getPolls = function() {
  */
 exports.createPoll = function(poll) {
     var id = btoa(uuid.v4());
-    poll._type = 'poll';
     poll._version = 1;
-    var db = cbConnection.get();
-    return Q.ninvoke(db, 'add', 'polls/' + id, poll)
-        .then(function() {
-            return getPollWithId(id);
-        });
+    return Q.ninvoke(dynamoConnection, 'putItem', {
+        TableName: tableName,
+        Item: {
+            _id: id,
+            poll: poll
+        }
+    }).then(function() {
+        return getPollWithId(id);
+    });
 };
 
 /**
@@ -102,8 +88,14 @@ exports.getPoll = function(id) {
  * @returns {!Promise.<undefined|Error>}
  */
 exports.updatePoll = function(id, poll) {
-    var db = cbConnection.get();
-    return Q.ninvoke(db, 'replace', 'polls/' + id, poll);
+    poll._version = 1;
+    return Q.ninvoke(dynamoConnection, 'putItem', {
+        TableName: tableName,
+        Item: {
+            _id: id,
+            poll: poll
+        }
+    });
 };
 
 /**
@@ -111,6 +103,8 @@ exports.updatePoll = function(id, poll) {
  * @returns {!Promise.<undefined|Error>}
  */
 exports.deletePoll = function(id) {
-    var db = cbConnection.get();
-    return Q.ninvoke(db, 'remove', 'polls/' + id, null);
+    return Q.ninvoke(dynamoConnection, 'deleteItem', {
+        TableName: tableName,
+        Key: { _id: id }
+    });
 };

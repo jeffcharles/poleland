@@ -3,21 +3,25 @@ angular.module('poleland.services', []).
     factory('polls', ['$http', '$q', function($http, $q) {
         'use strict';
         return {
-            getPolls: function() {
+            getPolls: function(loadMoreHref) {
                 var deferred = $q.defer();
-                $http({
+                var httpParams = {
                     method: 'GET',
-                    url: '/api/v1/polls'
-                }).success(function(data) {
-                    deferred.resolve(data.map(function(poll) {
-                        return {
-                            title: poll.title,
-                            // double-encode since browser will decode once
-                            anchorHref: encodeURIComponent(encodeURIComponent(
-                                poll._links.self.href)),
-                            href: encodeURIComponent(poll._links.self.href)
-                        };
-                    }));
+                    url: loadMoreHref || '/api/v1/polls'
+                };
+                $http(httpParams).success(function(data) {
+                    deferred.resolve({
+                        polls: data.polls.map(function(poll) {
+                            return {
+                                title: poll.title,
+                                // double-encode since browser will decode once
+                                anchorHref: encodeURIComponent(encodeURIComponent(
+                                    poll._links.self.href)),
+                                href: encodeURIComponent(poll._links.self.href)
+                            };
+                        }),
+                        loadMoreHref: data._links && data._links.next
+                    });
                 }).error(function(data, status) {
                     deferred.reject(status && status == 502 ?
                                     'ApiServerDown' : data);

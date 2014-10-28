@@ -3,9 +3,7 @@
 
 var assert = require('assert');
 var request = require('supertest');
-var appContainer = require('./../../src/app');
-
-var app = appContainer.app;
+var app = require('./../../src/app');
 
 exports.poll = {
     title: 'Test',

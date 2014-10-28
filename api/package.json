@@ -10,9 +10,10 @@
   "author": "Jeffrey Charles <jeffreycharles@gmail.com>",
   "license": "BSD",
   "dependencies": {
+    "aws-sdk": "^2.0.21",
     "body-parser": "~1.5.2",
     "btoa": "^1.1.2",
-    "couchbase": "^1.2.4",
+    "dynamodb-doc": "git://github.com/awslabs/dynamodb-document-js-sdk.git#4ee5768d3ec3fc036122d999f9e6749bba923d8c",
     "errorhandler": "~1.1.1",
     "express": "~4.7.2",
     "morgan": "~1.2.2",

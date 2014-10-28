@@ -1,28 +1,106 @@
 ---
-- include: couchbase.yml
-- include: web.yml
-
-- hosts: web
+- hosts: all
   tasks:
+    - name: Install UI apt packages
+      apt: pkg=git-core update_cache=yes
 
-    - name: Create Couchbase bucket
-      command: /vagrant/api/couchbase-scripts/create-db.sh
-      register: bucket
-      changed_when: bucket.stdout != ''
+    - name: Install Node.js
+      shell: wget http://nodejs.org/dist/v0.10.28/node-v0.10.28-linux-x64.tar.gz -O - | tar -C /usr/local --strip-components 1 -xzf -
+               creates=/usr/local/bin/node
 
-    - name: Add test data to Couchbase
-      command: /usr/local/bin/node /vagrant/api/couchbase-scripts/add-test-data.js
-      register: data
-      changed_when: data.stdout != ''
-
-    - name: Run docker images
-      docker: image={{ item.image }} name={{ item.name }}
-                volumes={{ item.volumes }} state=running
+    - name: Install global Node packages
+      npm: name={{ item.n }} global=yes version={{ item.v }}
       with_items:
-        - { image: poleland-api, name: poleland-api-container,
-            volumes: '/vagrant/api:/usr/src/node' }
-        - { image: poleland-ui, name: poleland-ui-container,
-            volumes: '/vagrant/ui:/vagrant/ui' }
+        - { n: bower, v: 1.3.2 }
+        - { n: gulp, v: 3.6.0 }
+
+    - name: Install NPM dependencies for UI
+      npm: path=/vagrant/ui
+
+    - name: Install Bower dependencies
+      command: /usr/local/bin/bower install --allow-root chdir=/vagrant/ui
+      register: bower
+      changed_when: bower.stdout != ''
+
+    - name: Install NPM dependencies for API
+      npm: path=/vagrant/api
+
+    - name: Install apt-transport-https for Docker
+      apt: pkg=apt-transport-https
+
+    - name: Add key for Docker apt repo
+      apt_key: keyserver=hkp://keyserver.ubuntu.com:80 id=A88D21E9 state=present
+
+    - name: Add Docker repo to apt sources list
+      apt_repository: repo='deb https://get.docker.io/ubuntu docker main'
+                        state=present
+
+    - name: Install apt packages for Docker
+      apt: pkg={{ item }} update_cache=yes
+      with_items:
+        - lxc-docker-1.1.0
+        - python-pip
+
+    - name: Install docker-py
+      pip: name=docker-py version=0.3.1
+
+    - name: Build docker images
+      docker_image: path={{ item.path }} name={{ item.name }} state=present
+      with_items:
+        - { path: /vagrant/api, name: poleland-api }
+        - { path: /vagrant/ui, name: poleland-ui }
+        - { path: /vagrant/routing, name: poleland-routing }
+
+    - name: Run local DynamoDB docker image
+      docker: image=fitz/dynamodb-local name=dynamodb command='-port 8000'
+                ports=8000:8000 state=running
+
+    - name: Create directory for AWS credentials
+      file: path={{ item.dir }}/.aws state=directory mode=0700
+              owner={{ item.user }} group={{ item.user }}
+      with_items:
+        - { dir: /root, user: root }
+        - { dir: /home/vagrant, user: vagrant }
+
+    - name: Copy in AWS credentials
+      copy: src=~/.aws/credentials dest={{ item.dir }}/.aws/credentials
+              mode=0600 owner={{ item.user }} group={{ item.user }}
+      with_items:
+        - { dir: /root, user: root }
+        - { dir: /home/vagrant, user: vagrant }
+
+    - name: Add DynamoDB prefix environment variable
+      lineinfile: dest=/home/vagrant/.profile line='export DYNAMO_DB_PREFIX=dev'
+                    insertafter=EOF state=present
+
+    - name: Create tables in DynamoDB
+      command: /vagrant/api/dynamodb-setup/create-tables.js
+      register: dynamodb_tables
+      changed_when: dynamodb_tables.stdout != ''
+      environment:
+        DYNAMO_DB_PREFIX: dev
+
+    - name: Add test data to DynamoDB
+      command: /vagrant/api/dynamodb-setup/add-test-data.js
+      register: dynamodb_data
+      changed_when: dynamodb_data.stdout != ''
+      environment:
+        DYNAMO_DB_PREFIX: dev
+
+    - name: Get Docker bridge IP address
+      shell: ip route | awk '/docker/ { print $NF }'
+      register: docker_bridge
+      changed_when: False
+
+    - name: Run API docker image
+      docker: image=poleland-api name=poleland-api-container
+                volumes='/vagrant/api:/usr/src/node'
+                env='AWS_ACCESS_KEY_ID={{ aws_access_key_id }},AWS_SECRET_ACCESS_KEY={{ aws_secret_access_key }},DYNAMO_DB_URL=http://{{ docker_bridge.stdout }}:8000,DYNAMO_DB_PREFIX=dev'
+                state=running
+
+    - name: Run UI docker image
+      docker: image=poleland-ui name=poleland-ui-container
+                volumes='/vagrant/ui:/vagrant/ui' state=running
 
     - name: Run routing docker image
       docker: image=poleland-routing name=poleland-routing-container ports=80:80

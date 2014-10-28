@@ -1,6 +1,9 @@
-/* global console, process, require */
+#!/usr/bin/env node
+/* global console, require */
 'use strict';
-var couchbase = require('couchbase');
+var Q = require('q');
+var dynamodbInfo = require('./../src/db/dynamodb-connection');
+var dynamodb = dynamodbInfo.connection;
 
 var polls = {
     '1': {
@@ -69,28 +72,21 @@ var polls = {
     }
 };
 
-var bucket = 'poleland';
-if(process.argv.length === 3) {
-    bucket = process.argv[2];
-}
-var db =
-        new couchbase.Connection({host: '10.0.0.2:8091', bucket: bucket});
-
-var pollsForCb = {};
-for(var pollId in polls) {
-    pollsForCb['polls/' + pollId] = { value: polls[pollId] };
-}
-db.addMulti(pollsForCb, null, function(err, results) {
-    var hasProblematicError = false;
-    for(var id in results) {
-        var result = results[id];
-        if(result.error
-           && result.error.code !== couchbase.errors.keyAlreadyExists) {
-            console.log(result.error);
-            hasProblematicError = true;
-        } else if(!result.error) {
-            console.log('Created document for ' + id);
+var putPromises = Object.keys(polls).map(function(pollId) {
+    return Q.ninvoke(dynamodb, 'putItem', {
+        TableName: dynamodbInfo.prefix + '_polls',
+        Item: {
+            _id: pollId,
+            poll: polls[pollId]
         }
-    }
-    process.exit(hasProblematicError ? 1 : 0);
+    }).then(function(result) {
+        console.log('Created document in polls for ' + pollId);
+    });
 });
+
+Q.all(putPromises).then(function() {
+    process.exit(0);
+}, function(err) {
+    console.error(err);
+    process.exit(1);
+}).done();

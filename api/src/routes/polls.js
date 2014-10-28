@@ -163,12 +163,22 @@ function preparePollForRes(req, poll) {
 exports.index = function(req, res, next) {
     res.format({
         'application/json': function() {
-            db.getPolls()
-                .then(function(polls) {
-                    polls = polls.map(function(p) {
+            db.getPolls(req.query.continueAfter, req.query.limit)
+                .then(function(results) {
+                    var polls = results.items.map(function(p) {
                         return preparePollForRes(req, p);
                     });
-                    res.send(polls);
+                    var body = { polls: polls };
+                    if(results.continueAfter) {
+                        var next = utilities.convertRelUrlToAbs(
+                            req,
+                            '/api/v1/polls?continueAfter=' +
+                                results.continueAfter);
+                        body._links = {
+                            next: next
+                        };
+                    }
+                    res.send(body);
                 }).fail(function(err) {
                     next(err);
                 })

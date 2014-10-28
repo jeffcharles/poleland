@@ -1,20 +1,10 @@
-/* global after, before, describe, it, require */
+/* global describe, it, require */
 'use strict';
 
 var assert = require('assert');
 var request = require('supertest');
-var appContainer = require('./../../../src/app');
+var app = require('./../../../src/app');
 var helpers = require('./../helpers');
-
-var app = appContainer.app;
-
-before(function() {
-    appContainer.start();
-});
-
-after(function() {
-    appContainer.stop();
-});
 
 describe('POST /api/v1/polls', function() {
     it('creates a new poll', function(done) {
@@ -73,6 +63,29 @@ describe('GET /api/v1/polls', function() {
                 .set('Accept', 'application/json')
                 .expect('Content-Type', 'application/json; charset=utf-8')
                 .expect(200, next);
+        }, done);
+    });
+
+    it('handles load more', function(done) {
+        helpers.createTemporaryPoll(function(pollRelativeUrl, next) {
+            request(app)
+                .get('/api/v1/polls?limit=1')
+                .set('Accept', 'application/json')
+                .expect(200)
+                .end(function(err, res) {
+                    if(err) {
+                        next(err);
+                        return;
+                    }
+                    var loadMoreHref = res.body._links.next;
+                    assert.ok(loadMoreHref);
+                    var relativeHref =
+                            '/' + loadMoreHref.split('/').slice(3).join('/');
+                    request(app)
+                        .get(relativeHref)
+                        .set('Accept', 'application/json')
+                        .expect(200, next);
+                });
         }, done);
     });
 });

@@ -1,18 +1,8 @@
-/* global after, before, describe, it, require */
+/* global describe, it, require */
 'use strict';
 
 var request = require('supertest');
-var appContainer = require('./../../../src/app');
-
-var app = appContainer.app;
-
-before(function() {
-    appContainer.start();
-});
-
-after(function() {
-    appContainer.stop();
-});
+var app = require('./../../../src/app');
 
 describe('GET /api/v1', function() {
     it('links to polls', function(done) {

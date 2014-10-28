@@ -15,12 +15,17 @@ angular.module('poleland.controllers', []).
                 function($scope, $location, $log, polls) {
                     'use strict';
                     $scope.polls = [];
-                    polls.getPolls().
-                        then(function(polls) {
-                            $scope.polls = polls;
-                        }, function(err) {
-                            $log.error(err);
-                        });
+
+                    $scope.loadMorePolls = function() {
+                        polls.getPolls($scope.loadMoreHref).
+                            then(function(data) {
+                                $scope.polls = $scope.polls.concat(data.polls);
+                                $scope.loadMoreHref = data.loadMoreHref;
+                            }, function(err) {
+                                $log.error(err);
+                            });
+                    };
+                    $scope.loadMorePolls();
 
                     $scope.createPoll = function(pollTitle) {
                         polls.createPoll({
