@@ -17,7 +17,7 @@
     "tests"
   ],
   "dependencies": {
-    "angular-uuid4": "0.0.3",
-    "angular-ui-sortable": "0.12.6"
+    "angular-uuid4": "0.2.0",
+    "angular-ui-sortable": "0.13.0"
   }
 }
