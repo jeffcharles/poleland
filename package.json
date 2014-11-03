@@ -10,22 +10,22 @@
   "author": "Jeffrey Charles <jeffreycharles@gmail.com>",
   "license": "BSD",
   "dependencies": {
-    "aws-sdk": "^2.0.21",
-    "body-parser": "~1.5.2",
-    "btoa": "^1.1.2",
+    "aws-sdk": "2.0.21",
+    "body-parser": "1.5.2",
+    "btoa": "1.1.2",
     "dynamodb-doc": "git://github.com/awslabs/dynamodb-document-js-sdk.git#4ee5768d3ec3fc036122d999f9e6749bba923d8c",
-    "errorhandler": "~1.1.1",
-    "express": "~4.7.2",
-    "morgan": "~1.2.2",
-    "node-uuid": "^1.4.1",
-    "q": "^1.0.1",
-    "tv4": "~1.1.0",
-    "verror": "^1.4.0"
+    "errorhandler": "1.1.1",
+    "express": "4.7.2",
+    "morgan": "1.2.2",
+    "node-uuid": "1.4.1",
+    "q": "1.0.1",
+    "tv4": "1.1.0",
+    "verror": "1.4.0"
   },
   "devDependencies": {
-    "supertest": "~0.13.0",
-    "gulp": "~3.8.6",
-    "gulp-mocha": "~0.5.2",
-    "gulp-jshint": "~1.8.0"
+    "supertest": "0.13.0",
+    "gulp": "3.8.6",
+    "gulp-mocha": "0.5.2",
+    "gulp-jshint": "1.8.0"
   }
 }
