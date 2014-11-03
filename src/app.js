@@ -1,4 +1,4 @@
-/* global module, process, require */
+/* global __dirname, module, process, require */
 'use strict';
 
 var bodyParser = require('body-parser');
@@ -12,7 +12,7 @@ var submissions = require('./routes/poll-submissions');
 
 var app = express();
 
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 80);
 app.use(logger('dev'));
 app.use(bodyParser.json());
 
@@ -20,6 +20,8 @@ if(app.get('env') == 'development') {
     Q.longStackSupport = true;
     app.use(errorHandler());
 }
+
+app.use(express.static(__dirname + '/../public'));
 
 app.get('/api/v1', routes.index);
 app.get('/api/v1/polls', polls.index);

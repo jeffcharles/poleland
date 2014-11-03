@@ -1,7 +1,6 @@
 /.vagrant/
-/api/node_modules/
-/ui/node_modules/
-/ui/static/bower_components/
+/node_modules/
+/public/bower_components/
 
 /coverage.html
 /vagrant_ansible_inventory_default
