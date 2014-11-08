@@ -8,11 +8,16 @@ if(!dbPrefix) {
     throw new Error('Missing DYNAMO_DB_PREFIX');
 }
 
-var dynamodb = new DOC.DynamoDB(new AWS.DynamoDB({
-    endpoint: process.env.DYNAMO_DB_URL || 'http://localhost:8000',
+var config = {
     apiVersion: '2012-08-10',
     region: 'us-east-1'
-}));
+};
+
+if(!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+    config.endpoint = process.env.DYNAMO_DB_URL || 'http://localhost:8000';
+}
+
+var dynamodb = new DOC.DynamoDB(new AWS.DynamoDB(config));
 
 module.exports = {
     connection: dynamodb,
