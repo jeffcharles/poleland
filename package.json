@@ -5,7 +5,7 @@
   "main": "src/app.js",
   "scripts": {
     "start": "node src/run-app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test"
   },
   "author": "Jeffrey Charles <jeffreycharles@gmail.com>",
   "license": "BSD",
