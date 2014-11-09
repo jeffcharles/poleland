@@ -29,6 +29,4 @@ gulp.task('acceptanceTests', function() {
     return test('./test/acceptance/**/*.js');
 });
 
-gulp.task('test', ['commitTests', 'acceptanceTests']);
-
-gulp.task('default', ['lint', 'test']);
+gulp.task('default', ['lint', 'commitTests', 'acceptanceTests']);
