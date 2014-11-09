@@ -5,7 +5,8 @@
   "main": "src/app.js",
   "scripts": {
     "start": "forever --minUptime 1000 -w --watchDirectory src src/run-app.js",
-    "test": "gulp test"
+    "test": "gulp test",
+    "debug": "node debug src/run-app.js"
   },
   "author": "Jeffrey Charles <jeffreycharles@gmail.com>",
   "license": "BSD",
