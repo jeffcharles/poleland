@@ -4,7 +4,7 @@
   "description": "A site for managing polls",
   "main": "src/app.js",
   "scripts": {
-    "start": "node src/run-app.js",
+    "start": "forever --minUptime 1000 -w --watchDirectory src src/run-app.js",
     "test": "gulp test"
   },
   "author": "Jeffrey Charles <jeffreycharles@gmail.com>",
@@ -16,6 +16,7 @@
     "dynamodb-doc": "git://github.com/awslabs/dynamodb-document-js-sdk.git#4ee5768d3ec3fc036122d999f9e6749bba923d8c",
     "errorhandler": "1.2.2",
     "express": "4.10.1",
+    "forever": "0.13.0",
     "morgan": "1.4.1",
     "node-uuid": "1.4.1",
     "q": "1.0.1",
