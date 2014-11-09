@@ -18,6 +18,13 @@ Deploying a dev instance
 2. Install Ansible (I installed through Pip and am running version 1.7.0)
 3. Run `vagrant up`
 
+Dev instance shortcuts
+----------------------
+
+You can run Node commands (i.e., `node` and `npm`) using the Node docker image
+with the `do-node` bash alias defined for the vagrant user. E.g.,
+`do-node npm test`.
+
 How to workaround compiler errors on OS X
 -----------------------------------------
 

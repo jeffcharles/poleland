@@ -48,22 +48,18 @@
       docker: image=fitz/dynamodb-local name=dynamodb command='-port 8000'
                 ports=8000:8000 state=running
 
-    - name: Create directory for AWS credentials
-      file: path={{ item.dir }}/.aws state=directory mode=0700
-              owner={{ item.user }} group={{ item.user }}
-      with_items:
-        - { dir: /root, user: root }
-        - { dir: /home/vagrant, user: vagrant }
+    - name: Add script adding environment variables
+      template: src=env_vars.sh.j2 dest=/home/vagrant/env_vars.sh owner=vagrant
+                  group=vagrant mode=0700
 
-    - name: Copy in AWS credentials
-      copy: src=~/.aws/credentials dest={{ item.dir }}/.aws/credentials
-              mode=0600 owner={{ item.user }} group={{ item.user }}
-      with_items:
-        - { dir: /root, user: root }
-        - { dir: /home/vagrant, user: vagrant }
+    - name: Add sourcing for script with environment variables
+      lineinfile: dest=/home/vagrant/.profile
+                    line='source /home/vagrant/env_vars.sh'
+                    insertafter=EOF state=present
 
-    - name: Add DynamoDB prefix environment variable
-      lineinfile: dest=/home/vagrant/.profile line='export DYNAMO_DB_PREFIX=dev'
+    - name: Add sourcing for aliases to use Docker images
+      lineinfile: dest=/home/vagrant/.profile
+                    line='source /vagrant/provisioning/docker_aliases.sh'
                     insertafter=EOF state=present
 
     - name: Create tables in DynamoDB
@@ -71,6 +67,8 @@
       register: dynamodb_tables
       changed_when: dynamodb_tables.stdout != ''
       environment:
+        AWS_ACCESS_KEY_ID: '{{ aws_access_key_id }}'
+        AWS_SECRET_ACCESS_KEY: '{{ aws_secret_access_key }}'
         DYNAMO_DB_PREFIX: dev
 
     - name: Add test data to DynamoDB
@@ -78,6 +76,8 @@
       register: dynamodb_data
       changed_when: dynamodb_data.stdout != ''
       environment:
+        AWS_ACCESS_KEY_ID: '{{ aws_access_key_id }}'
+        AWS_SECRET_ACCESS_KEY: '{{ aws_secret_access_key }}'
         DYNAMO_DB_PREFIX: dev
 
     - name: Get Docker bridge IP address
