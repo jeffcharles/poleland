@@ -4,13 +4,6 @@ Poleland
 This is a random project I'm using to learn more about Node.js, Angular, and
 some other random technologies.
 
-Docker Container Topology
--------------------------
-
-* `api` is a Node.js HTTP API around poll management
-* `routing` provides edge routing into the other containers
-* `ui` is a set of static files providing a web UI around the API
-
 Deploying a dev instance
 ------------------------
 
