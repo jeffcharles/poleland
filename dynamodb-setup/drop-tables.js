@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* global require */
 'use strict';
-var Q = require('Q');
+var Q = require('q');
 var dynamodbInfo = require('./../src/db/dynamodb-connection');
 var dynamodb = dynamodbInfo.connection;
 var tableName = dynamodbInfo.prefix + '_polls';
