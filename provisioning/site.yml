@@ -41,6 +41,14 @@
     - name: Install docker-py
       pip: name=docker-py version=0.3.1
 
+    - name: Create docker group
+      group: name=docker state=present
+
+    - name: Add vagrant user to docker group
+      user: name=vagrant groups=docker
+      notify:
+        - Restart docker
+
     - name: Build docker image
       docker_image: path=/vagrant name=poleland state=present
 
@@ -91,3 +99,7 @@
                 ports='80:80'
                 env='AWS_ACCESS_KEY_ID={{ aws_access_key_id }},AWS_SECRET_ACCESS_KEY={{ aws_secret_access_key }},DYNAMO_DB_URL=http://{{ docker_bridge.stdout }}:8000,DYNAMO_DB_PREFIX=dev'
                 state=running
+
+  handlers:
+    - name: Restart docker
+      service: name=docker state=restarted
