@@ -14,8 +14,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ansible.playbook = "provisioning/site.yml"
     ansible.sudo = true
     ansible.extra_vars = {
-      aws_access_key_id: "a",
-      aws_secret_access_key: "a"
+      aws_access_key_id: ENV["AWS_ACCESS_KEY_ID"],
+      aws_secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"]
     }
   end
 
