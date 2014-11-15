@@ -75,12 +75,18 @@ var polls = {
 var putPromises = Object.keys(polls).map(function(pollId) {
     return Q.ninvoke(dynamodb, 'putItem', {
         TableName: dynamodbInfo.prefix + '_polls',
+        ConditionExpression: 'attribute_not_exists(#id)',
+        ExpressionAttributeNames: { '#id': '_id' },
         Item: {
             _id: pollId,
             poll: polls[pollId]
         }
     }).then(function(result) {
         console.log('Created document in polls for ' + pollId);
+    }, function(err) {
+        if(err.code !== 'ConditionalCheckFailedException') {
+            throw err;
+        }
     });
 });
 
