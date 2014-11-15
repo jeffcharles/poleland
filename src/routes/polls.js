@@ -78,25 +78,6 @@ function sendPollNotValidError(req, res, error) {
 }
 
 /**
- * @param {!Request} req
- * @param {!Response} res
- * @param {!Function} next
- * @param {!Function} operation
- */
-function resourceOperation(req, res, next, operation) {
-    db.getPoll(req.param('pollId'))
-        .then(function(poll) {
-            operation(poll);
-        }).catch(function(err) {
-            if(err.name === 'pollNotFound') {
-                utilities.sendPollNotFoundError(req, res);
-            } else {
-                next(err);
-            }
-        });
-}
-
-/**
  * @param {!UserEnteredPoll} poll
  * @returns {!RawPoll}
  */
@@ -116,21 +97,6 @@ function stripUnknownPollProperties(poll) {
             };
         })
     };
-}
-
-/**
- * @param {!Request} req
- * @param {!Response} res
- * @param {!Function} operation
- */
-function validatePoll(req, res, operation) {
-    var uploadedPoll = req.body;
-    var valid = tv4.validate(uploadedPoll, pollSchema);
-    if(!valid) {
-        sendPollNotValidError(req, res, tv4.error);
-    } else {
-        operation(stripUnknownPollProperties(uploadedPoll));
-    }
 }
 
 /**
@@ -193,10 +159,17 @@ exports.index = function(req, res, next) {
 exports.get = function(req, res, next) {
     res.format({
         'application/json': function() {
-            resourceOperation(req, res, next, function(poll) {
-                preparePollForRes(req, poll);
-                res.send(poll);
-            });
+            db.getPoll(req.param('pollId'))
+                .then(function(poll) {
+                    preparePollForRes(req, poll);
+                    res.send(poll);
+                }).catch(function(err) {
+                    if(db.isPollNotFoundError(err)) {
+                        utilities.sendPollNotFoundError(req, res);
+                    } else {
+                        next(err);
+                    }
+                });
         }
     });
 };
@@ -209,20 +182,22 @@ exports.get = function(req, res, next) {
 exports.post = function(req, res, next) {
     res.format({
         'application/json': function() {
-            validatePoll(req, res, function(uploadedPoll) {
-                db.createPoll(uploadedPoll)
-                    .then(function(poll) {
-                        var selfUrl =
+            if(!tv4.validate(req.body, pollSchema)) {
+                sendPollNotValidError(req, res, tv4.error);
+                return;
+            }
+            db.createPoll(stripUnknownPollProperties(req.body))
+                .then(function(poll) {
+                    var selfUrl =
                             utilities.convertRelUrlToAbs(req,
                                                          '/api/v1/polls/' +
                                                          poll._id);
-                        preparePollForRes(req, poll);
-                        res.setHeader('Location', selfUrl);
-                        res.status(201).send(poll);
-                    }).catch(function(err) {
-                        next(err);
-                    });
-            });
+                    preparePollForRes(req, poll);
+                    res.setHeader('Location', selfUrl);
+                    res.status(201).send(poll);
+                }).catch(function(err) {
+                    next(err);
+                });
         }
     });
 };
@@ -233,16 +208,26 @@ exports.post = function(req, res, next) {
  * @param {!Function} next
  */
 exports.put = function(req, res, next) {
-    resourceOperation(req, res, next, function() {
-        validatePoll(req, res, function(uploadedPoll) {
-            db.updatePoll(req.param('pollId'), uploadedPoll)
-                .then(function() {
-                    res.status(204).end();
-                }).catch(function(err) {
-                    next(err);
-                });
+    db.getPoll(req.param('pollId'))
+        .then(function() {
+            if(!tv4.validate(req.body, pollSchema)) {
+                var err = new Error('Invalid poll');
+                err.name = 'pollInvalid';
+                throw err;
+            }
+            return db.updatePoll(
+                req.param('pollId'), stripUnknownPollProperties(req.body));
+        }).then(function() {
+            res.status(204).end();
+        }).catch(function(err) {
+            if(db.isPollNotFoundError(err)) {
+                utilities.sendPollNotFoundError(req, res);
+            } else if(err.name === 'pollInvalid') {
+                sendPollNotValidError(req, res, tv4.error);
+            } else {
+                next(err);
+            }
         });
-    });
 };
 
 /**
@@ -251,12 +236,16 @@ exports.put = function(req, res, next) {
  * @param {!Function} next
  */
 exports.del = function(req, res, next) {
-    resourceOperation(req, res, next, function() {
-        db.deletePoll(req.param('pollId'))
-            .then(function() {
-                res.status(204).end();
-            }).catch(function(err) {
+    db.getPoll(req.param('pollId'))
+        .then(function() {
+            return db.deletePoll(req.param('pollId'));
+        }).then(function() {
+            res.status(204).end();
+        }).catch(function(err) {
+            if(db.isPollNotFoundError(err)) {
+                utilities.sendPollNotFoundError(req, res);
+            } else {
                 next(err);
-            });
-    });
+            }
+        });
 };

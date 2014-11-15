@@ -29,6 +29,14 @@ function getPollWithId(id) {
 }
 
 /**
+ * @param {!Error} err
+ * @returns {!boolean}
+ */
+exports.isPollNotFoundError = function(err) {
+    return err.name === 'pollNotFound';
+};
+
+/**
  * @param {string} continueAfter
  * @param {number} limit
  * @returns {!Promise.<QueryResults<PollDoc[]>|Error>}
