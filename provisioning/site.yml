@@ -77,7 +77,7 @@
       environment:
         AWS_ACCESS_KEY_ID: '{{ aws_access_key_id }}'
         AWS_SECRET_ACCESS_KEY: '{{ aws_secret_access_key }}'
-        DYNAMO_DB_PREFIX: dev
+        DYNAMO_DB_PREFIX: poleland_dev
 
     - name: Add test data to DynamoDB
       command: /vagrant/dynamodb-setup/add-test-data.js
@@ -86,7 +86,7 @@
       environment:
         AWS_ACCESS_KEY_ID: '{{ aws_access_key_id }}'
         AWS_SECRET_ACCESS_KEY: '{{ aws_secret_access_key }}'
-        DYNAMO_DB_PREFIX: dev
+        DYNAMO_DB_PREFIX: poleland_dev
 
     - name: Get Docker bridge IP address
       shell: ip route | awk '/docker/ { print $NF }'
@@ -96,7 +96,7 @@
     - name: Run docker image
       docker: image=poleland name=poleland
                 ports='80:80'
-                env='AWS_ACCESS_KEY_ID={{ aws_access_key_id }},AWS_SECRET_ACCESS_KEY={{ aws_secret_access_key }},DYNAMO_DB_URL=http://{{ docker_bridge.stdout }}:8000,DYNAMO_DB_PREFIX=dev'
+                env='AWS_ACCESS_KEY_ID={{ aws_access_key_id }},AWS_SECRET_ACCESS_KEY={{ aws_secret_access_key }},DYNAMO_DB_URL=http://{{ docker_bridge.stdout }}:8000,DYNAMO_DB_PREFIX=poleland_dev'
                 state=running
 
   handlers:
