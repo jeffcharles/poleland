@@ -13,12 +13,11 @@ exports.post = function(req, res, next) {
     polls.getPoll(req.param('pollId'))
         .then(function() {
             res.status(200).end();
-        }).fail(function(err) {
+        }).catch(function(err) {
             if(err.name === 'pollNotFound') {
                 utilities.sendPollNotFoundError(req, res);
             } else {
                 next(err);
             }
-        })
-        .done();
+        });
 };

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /* global console, require */
 'use strict';
-var Q = require('q');
+var BPromise = require('bluebird');
 var dynamodbInfo = require('./../src/db/dynamodb-connection');
-var dynamodb = dynamodbInfo.connection;
+var dynamodb = BPromise.promisifyAll(dynamodbInfo.connection);
 
 var polls = {
     '1': {
@@ -73,7 +73,7 @@ var polls = {
 };
 
 var putPromises = Object.keys(polls).map(function(pollId) {
-    return Q.ninvoke(dynamodb, 'putItem', {
+    return dynamodb.putItemAsync({
         TableName: dynamodbInfo.prefix + '_polls',
         ConditionExpression: 'attribute_not_exists(#id)',
         ExpressionAttributeNames: { '#id': '_id' },
@@ -83,16 +83,17 @@ var putPromises = Object.keys(polls).map(function(pollId) {
         }
     }).then(function(result) {
         console.log('Created document in polls for ' + pollId);
-    }, function(err) {
-        if(err.code !== 'ConditionalCheckFailedException') {
+    }).error(function(err) {
+        if(err.cause.code !== 'ConditionalCheckFailedException') {
             throw err;
         }
     });
 });
 
-Q.all(putPromises).then(function() {
-    process.exit(0);
-}, function(err) {
-    console.error(err);
-    process.exit(1);
-}).done();
+BPromise.all(putPromises)
+    .then(function() {
+        process.exit(0);
+    }).catch(function(err) {
+        console.error(err);
+        process.exit(1);
+    });

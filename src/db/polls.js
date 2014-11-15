@@ -1,10 +1,10 @@
 /* global exports, require */
 'use strict';
+var BPromise = require('bluebird');
 var btoa = require('btoa');
-var Q = require('q');
 var uuid = require('node-uuid');
 var dynamoInfo = require('./dynamodb-connection');
-var dynamoConnection = dynamoInfo.connection;
+var dynamoConnection = BPromise.promisifyAll(dynamoInfo.connection);
 var tableName = dynamoInfo.prefix + '_polls';
 
 /**
@@ -12,7 +12,7 @@ var tableName = dynamoInfo.prefix + '_polls';
  * @returns {!Promise.<PollDoc|PollNotFoundError|Error>}
  */
 function getPollWithId(id) {
-    return Q.ninvoke(dynamoConnection, 'getItem', {
+    return dynamoConnection.getItemAsync({
         TableName: tableName,
         Key: { _id: id },
         ConsistentRead: true
@@ -41,7 +41,7 @@ exports.getPolls = function(continueAfter, limit) {
     if(continueAfter) {
         params.ExclusiveStartKey = { _id: continueAfter };
     }
-    return Q.ninvoke(dynamoConnection, 'scan', params)
+    return dynamoConnection.scanAsync(params)
         .then(function(results) {
             var inlineId = function(item) {
                 var poll = item.poll;
@@ -63,7 +63,7 @@ exports.getPolls = function(continueAfter, limit) {
 exports.createPoll = function(poll) {
     var id = btoa(uuid.v4());
     poll._version = 1;
-    return Q.ninvoke(dynamoConnection, 'putItem', {
+    return dynamoConnection.putItemAsync({
         TableName: tableName,
         Item: {
             _id: id,
@@ -89,7 +89,7 @@ exports.getPoll = function(id) {
  */
 exports.updatePoll = function(id, poll) {
     poll._version = 1;
-    return Q.ninvoke(dynamoConnection, 'putItem', {
+    return dynamoConnection.putItemAsync({
         TableName: tableName,
         Item: {
             _id: id,
@@ -103,7 +103,7 @@ exports.updatePoll = function(id, poll) {
  * @returns {!Promise.<undefined|Error>}
  */
 exports.deletePoll = function(id) {
-    return Q.ninvoke(dynamoConnection, 'deleteItem', {
+    return dynamoConnection.deleteItemAsync({
         TableName: tableName,
         Key: { _id: id }
     });

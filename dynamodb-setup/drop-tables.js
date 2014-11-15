@@ -1,25 +1,25 @@
 #!/usr/bin/env node
 /* global require */
 'use strict';
-var Q = require('q');
+var BPromise = require('bluebird');
 var dynamodbInfo = require('./../src/db/dynamodb-connection');
-var dynamodb = dynamodbInfo.connection;
+var dynamodb = BPromise.promisifyAll(dynamodbInfo.connection);
 var tableName = dynamodbInfo.prefix + '_polls';
 
-Q.ninvoke(dynamodb, 'describeTable', {
+dynamodb.describeTableAsync({
     TableName: tableName
-}).then(null, function(err) {
-    if(err.name !== 'ResourceNotFoundException') {
+}).error(function(err) {
+    if(err.cause.name !== 'ResourceNotFoundException') {
         throw err;
     }
     // no table to drop
     process.exit(0);
-}).then(Q.ninvoke(dynamodb, 'deleteTable', {
+}).then(dynamodb.deleteTableAsync({
     TableName: tableName
 })).then(function() {
     console.log('Dropped ' + tableName);
     process.exit(0);
-}, function(err) {
+}).catch(function(err) {
     console.error(err);
     process.exit(1);
 });

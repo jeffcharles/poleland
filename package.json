@@ -12,6 +12,7 @@
   "license": "BSD",
   "dependencies": {
     "aws-sdk": "2.0.23",
+    "bluebird": "2.3.11",
     "body-parser": "1.9.2",
     "btoa": "1.1.2",
     "dynamodb-doc": "git://github.com/awslabs/dynamodb-document-js-sdk.git#4ee5768d3ec3fc036122d999f9e6749bba923d8c",
@@ -20,7 +21,6 @@
     "forever": "0.13.0",
     "morgan": "1.4.1",
     "node-uuid": "1.4.1",
-    "q": "1.0.1",
     "tv4": "1.1.4",
     "verror": "1.4.0"
   },
