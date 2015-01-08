@@ -75,10 +75,9 @@ var polls = {
 var putPromises = Object.keys(polls).map(function(pollId) {
     return dynamodb.putItemAsync({
         TableName: dynamodbInfo.prefix + '_polls',
-        ConditionExpression: 'attribute_not_exists(#id)',
-        ExpressionAttributeNames: { '#id': '_id' },
+        ConditionExpression: 'attribute_not_exists(id)',
         Item: {
-            _id: pollId,
+            id: pollId,
             poll: polls[pollId]
         }
     }).then(function(result) {

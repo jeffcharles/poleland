@@ -108,14 +108,12 @@ function preparePollForRes(req, poll) {
     poll._links = {
         'self': {
             'href': utilities.convertRelUrlToAbs(req,
-                                                 '/api/v1/polls/' + poll._id)
+                                                 '/api/v1/polls/' + poll.id)
         },
         'collection': {
             'href': utilities.convertRelUrlToAbs(req, '/api/v1/polls')
         }
     };
-    delete poll._id;
-    delete poll._type;
     delete poll._version;
     return poll;
 }
@@ -159,7 +157,7 @@ exports.index = function(req, res, next) {
 exports.get = function(req, res, next) {
     res.format({
         'application/json': function() {
-            db.getPoll(req.param('pollId'))
+            db.getPoll(req.params.pollId)
                 .then(function(poll) {
                     preparePollForRes(req, poll);
                     res.send(poll);
@@ -191,7 +189,7 @@ exports.post = function(req, res, next) {
                     var selfUrl =
                             utilities.convertRelUrlToAbs(req,
                                                          '/api/v1/polls/' +
-                                                         poll._id);
+                                                         poll.id);
                     preparePollForRes(req, poll);
                     res.setHeader('Location', selfUrl);
                     res.status(201).send(poll);
@@ -208,7 +206,7 @@ exports.post = function(req, res, next) {
  * @param {!Function} next
  */
 exports.put = function(req, res, next) {
-    db.getPoll(req.param('pollId'))
+    db.getPoll(req.params.pollId)
         .then(function() {
             if(!tv4.validate(req.body, pollSchema)) {
                 var err = new Error('Invalid poll');
@@ -216,7 +214,7 @@ exports.put = function(req, res, next) {
                 throw err;
             }
             return db.updatePoll(
-                req.param('pollId'), stripUnknownPollProperties(req.body));
+                req.params.pollId, stripUnknownPollProperties(req.body));
         }).then(function() {
             res.status(204).end();
         }).catch(function(err) {
@@ -236,9 +234,9 @@ exports.put = function(req, res, next) {
  * @param {!Function} next
  */
 exports.del = function(req, res, next) {
-    db.getPoll(req.param('pollId'))
+    db.getPoll(req.params.pollId)
         .then(function() {
-            return db.deletePoll(req.param('pollId'));
+            return db.deletePoll(req.params.pollId);
         }).then(function() {
             res.status(204).end();
         }).catch(function(err) {

@@ -14,7 +14,7 @@ var tableName = dynamoInfo.prefix + '_polls';
 function getPollWithId(id) {
     return dynamoConnection.getItemAsync({
         TableName: tableName,
-        Key: { _id: id },
+        Key: { id: id },
         ConsistentRead: true
     }).then(function(result) {
         if(!Object.keys(result).length) {
@@ -23,7 +23,7 @@ function getPollWithId(id) {
             throw newErr;
         }
         var poll = result.Item.poll;
-        poll._id = id;
+        poll.id = id;
         return poll;
     });
 }
@@ -47,18 +47,18 @@ exports.getPolls = function(continueAfter, limit) {
         Limit: limit || 100
     };
     if(continueAfter) {
-        params.ExclusiveStartKey = { _id: continueAfter };
+        params.ExclusiveStartKey = { id: continueAfter };
     }
     return dynamoConnection.scanAsync(params)
         .then(function(results) {
             var inlineId = function(item) {
                 var poll = item.poll;
-                poll._id = item._id;
+                poll.id = item.id;
                 return poll;
             };
             var data = { items: results.Items.map(inlineId) };
             if(results.LastEvaluatedKey) {
-                data.continueAfter = results.LastEvaluatedKey._id;
+                data.continueAfter = results.LastEvaluatedKey.id;
             }
             return data;
         });
@@ -74,7 +74,7 @@ exports.createPoll = function(poll) {
     return dynamoConnection.putItemAsync({
         TableName: tableName,
         Item: {
-            _id: id,
+            id: id,
             poll: poll
         }
     }).then(function() {
@@ -100,7 +100,7 @@ exports.updatePoll = function(id, poll) {
     return dynamoConnection.putItemAsync({
         TableName: tableName,
         Item: {
-            _id: id,
+            id: id,
             poll: poll
         }
     });
@@ -113,6 +113,6 @@ exports.updatePoll = function(id, poll) {
 exports.deletePoll = function(id) {
     return dynamoConnection.deleteItemAsync({
         TableName: tableName,
-        Key: { _id: id }
+        Key: { id: id }
     });
 };

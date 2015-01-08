@@ -13,20 +13,33 @@ var app = express();
 
 app.set('port', process.env.PORT || 80);
 app.use(logger('dev'));
-app.use(bodyParser.json());
 
 if(app.get('env') == 'development') {
     app.use(errorHandler());
 }
 
-app.use(express.static(__dirname + '/../public'));
+app.use(express.static(__dirname + '/../dist'));
 
-app.get('/api/v1', routes.index);
-app.get('/api/v1/polls', polls.index);
-app.post('/api/v1/polls', polls.post);
-app.get('/api/v1/polls/:pollId', polls.get);
-app.put('/api/v1/polls/:pollId', polls.put);
-app.delete('/api/v1/polls/:pollId', polls.del);
-app.post('/api/v1/polls/:pollId/submissions', submissions.post);
+var apiRouter = new express.Router();
+apiRouter.use(bodyParser.json());
+apiRouter.get('/', routes.index);
+apiRouter.get('/polls', polls.index);
+apiRouter.post('/polls', polls.post);
+apiRouter.get('/polls/:pollId', polls.get);
+apiRouter.put('/polls/:pollId', polls.put);
+apiRouter.delete('/polls/:pollId', polls.del);
+apiRouter.post('/polls/:pollId/submissions', submissions.post);
+
+var baseApiRouter = new express.Router();
+baseApiRouter.use('/v1', apiRouter);
+baseApiRouter.use(function(req, res) {
+    res.sendStatus(404);
+});
+
+app.use('/api', baseApiRouter);
+
+app.use(function(req, res) {
+    res.sendFile('index.html', { root: __dirname + '/../dist/' });
+});
 
 module.exports = app;

@@ -1,6 +1,9 @@
 /.vagrant/
+/dist/
 /node_modules/
 /public/bower_components/
 
 /coverage.html
 /vagrant_ansible_inventory_default
+
+npm-debug.log

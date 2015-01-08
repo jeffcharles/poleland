@@ -10,7 +10,7 @@ var utilities = require('../utilities');
  * @param {!Function} next
  */
 exports.post = function(req, res, next) {
-    polls.getPoll(req.param('pollId'))
+    polls.getPoll(req.params.pollId)
         .then(function() {
             res.status(200).end();
         }).catch(function(err) {

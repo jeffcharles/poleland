@@ -17,11 +17,11 @@ dynamodb.describeTableAsync({
     return dynamodb.createTableAsync({
         TableName: tableName,
         AttributeDefinitions: [{
-            AttributeName: '_id',
+            AttributeName: 'id',
             AttributeType: 'S'
         }],
         KeySchema: [{
-            AttributeName: '_id',
+            AttributeName: 'id',
             KeyType: 'HASH'
         }],
         ProvisionedThroughput: {

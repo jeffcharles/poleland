@@ -19,6 +19,7 @@ describe('POST /api/v1/polls', function() {
             .expect(201)
             .then(function(res) {
                 var resPoll = res.body;
+                delete resPoll.id;
                 delete resPoll._links;
                 assert.deepEqual(resPoll, helpers.poll);
 
@@ -32,6 +33,7 @@ describe('POST /api/v1/polls', function() {
                     .expect(200);
             }).then(function(res) {
                 var resPoll = res.body;
+                delete resPoll.id;
                 delete resPoll._links;
                 assert.deepEqual(resPoll, helpers.poll);
                 return helpers.deletePoll(relativeUrl);
@@ -135,6 +137,7 @@ describe('PUT /api/v1/polls/:id', function() {
                     .expect(200);
             }).then(function(res) {
                 var resPoll = res.body;
+                delete resPoll.id;
                 delete resPoll._links;
                 assert.deepEqual(resPoll, helpers.poll);
 
