@@ -1,7 +1,7 @@
 Poleland
 ========
 
-This is a random project I'm using to learn more about Node.js, Angular, and
+This is a random project I'm using to learn more about Node.js, React, and
 some other random technologies.
 
 Deploying a dev instance
